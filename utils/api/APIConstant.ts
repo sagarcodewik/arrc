@@ -1,0 +1,23 @@
+export const API_LOGOUT: string = "/auth/logout";
+export const API_LOGIN: string = "/auth/login";
+export const API_REGISTER: string = "/auth/register";
+export const API_OTP_VERIFICATION: string = "/auth/otp-verified";
+
+export const API_OTP_RESEND: string = "/auth/otp-resend";
+
+export const API_FORGOT_PASSWORD: string = "/auth/forgot-password";
+export const API_GET_PROFILE: string = "/auth/getProfile";
+export const API_CHANGE_PASSWORD: string = "/auth/changePassword";
+export const API_EDIT_PROFILE: string = "/auth/edit-profile";
+export const API_USER_List: string = "/users";
+export const API_USER_DETAILS: string = "/users/details";
+export const API_USER_MEDIA_FILE: string = "/get-media-files";
+
+//faq
+export const API_FAQS_LIST: string = "admin/faq/all";
+
+//contact
+export const API_CREATE_CONTACTUS: string = "admin/createcontact"; 
+
+
+
