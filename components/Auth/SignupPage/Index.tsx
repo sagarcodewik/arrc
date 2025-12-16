@@ -1,16 +1,17 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
+
+import { useDispatch } from "react-redux";
+import { onLoginSuccess } from "@/redux/auth/authSlice";
 
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import Modal from "@/components/ui/Modal";
 import ShowToast from "@/components/Common/ShowToast";
-
 
 import { FiMail } from "react-icons/fi";
 import { MdOutlineLock } from "react-icons/md";
@@ -21,6 +22,8 @@ import {
   API_OTP_VERIFICATION,
 } from "@/utils/api/APIConstant";
 import { apiPost } from "@/utils/endpoints/common";
+
+/* ---------------- VALIDATION ---------------- */
 
 const SignupSchema = Yup.object().shape({
   email: Yup.string()
@@ -35,6 +38,8 @@ const SignupSchema = Yup.object().shape({
     .oneOf([Yup.ref("password")], "Passwords do not match")
     .required("Confirm your password"),
 });
+
+/* ---------------- PASSWORD STRENGTH ---------------- */
 
 const getStrength = (password: string) => {
   let score = 0;
@@ -54,8 +59,11 @@ const strengthColor = [
   "bg-emerald-500",
 ];
 
+/* ================= COMPONENT ================= */
+
 export default function SignupPage() {
   const router = useRouter();
+  const dispatch = useDispatch();
 
   const [otpModalOpen, setOtpModalOpen] = useState(false);
   const [registeredEmail, setRegisteredEmail] = useState("");
@@ -66,13 +74,19 @@ export default function SignupPage() {
 
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
+  /* ---------------- OTP TIMER ---------------- */
+
   useEffect(() => {
     if (!otpModalOpen || timer === 0) return;
     const interval = setInterval(() => setTimer((t) => t - 1), 1000);
     return () => clearInterval(interval);
   }, [otpModalOpen, timer]);
+
+  /* ---------------- OTP INPUT ---------------- */
+
   const handleOtpChange = (index: number, value: string) => {
     const clean = value.replace(/\D/g, "");
+
     if (clean.length === 4) {
       setOtp(clean.split("").slice(0, 4));
       inputRefs.current[3]?.focus();
@@ -99,11 +113,12 @@ export default function SignupPage() {
     }
   };
 
+  /* ---------------- VERIFY OTP ---------------- */
+
   const handleVerifyOtp = async () => {
     if (otpLoading) return;
 
     const finalOtp = Number(otp.join(""));
-    console.log("finalOtp======>", finalOtp, typeof finalOtp);
 
     if (!finalOtp || otp.join("").length !== 4) {
       ShowToast("Enter valid 4 digit OTP", "error");
@@ -126,8 +141,20 @@ export default function SignupPage() {
         return;
       }
 
+      /* ✅ SAVE AUTH IN REDUX */
+      dispatch(
+        onLoginSuccess({
+          data: {
+            user: res.data.user,
+            token: res.data.token,
+          },
+        })
+      );
+
       ShowToast("OTP verified successfully", "success");
       setOtpModalOpen(false);
+
+      /* ✅ REDIRECT */
       router.push("/dashboard");
     } catch {
       ShowToast("Network error", "error");
@@ -135,6 +162,8 @@ export default function SignupPage() {
       setOtpLoading(false);
     }
   };
+
+  /* ---------------- RESEND OTP ---------------- */
 
   const handleResendOtp = async () => {
     try {
@@ -161,33 +190,22 @@ export default function SignupPage() {
     }
   };
 
+  /* ================= UI ================= */
+
   return (
     <>
-      <div className="relative flex justify-center items-center min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 px-6">
-        <div className="w-full max-w-lg bg-white rounded-3xl shadow-2xl p-10">
-          <div className="flex flex-col items-center space-y-3 mb-6 text-center">
-      <div className="mb-4 flex justify-start">
-            <button
-              type="button"
-              onClick={() => router.push("/")}
-              className="flex items-center gap-2 text-sm text-slate-500 hover:text-slate-700 transition-colors"
-            >
-            <span className="text-lg font-medium">←</span>
-              <span>Back to sign in</span>
-            </button>
-          </div>
-            <span className="h-20 w-20 sm:h-24 sm:w-24 rounded-full overflow-hidden shadow-lg ring-4 ring-white/50">
-              <img
-                src="/images/logo.png"
-                alt="ARRC Logo"
-                className="h-full w-full object-cover"
-              />
-            </span>
+      <div className="flex min-h-screen items-center justify-center bg-slate-50 px-6">
+        <div className="w-full max-w-lg rounded-3xl bg-white p-10 shadow-xl">
+          <button
+            onClick={() => router.push("/")}
+            className="mb-4 flex items-center gap-2 text-sm text-slate-500 hover:text-slate-700"
+          >
+            <span className="text-lg">←</span> Back to sign in
+          </button>
 
-            <h1 className="text-3xl font-bold text-slate-900">
-              Create your account ARRC
-            </h1>
-          </div>
+          <h1 className="mb-6 text-center text-3xl font-bold text-slate-900">
+            Create your account
+          </h1>
 
           <Formik
             initialValues={{ email: "", password: "", confirmPassword: "" }}
@@ -225,13 +243,13 @@ export default function SignupPage() {
               }
             }}
           >
-            {({ values, errors, touched, handleChange, isSubmitting }) => {
+            {({ values, handleChange, isSubmitting }) => {
               const strength = getStrength(values.password);
 
               return (
                 <Form className="space-y-4">
                   <Input
-                    label="Email Address"
+                    label="Email"
                     name="email"
                     value={values.email}
                     onChange={handleChange}
@@ -248,14 +266,14 @@ export default function SignupPage() {
                   />
 
                   {values.password && (
-                    <div className="space-y-1">
-                      <div className="h-2 w-full bg-slate-200 rounded">
+                    <div>
+                      <div className="h-2 w-full rounded bg-slate-200">
                         <div
                           className={`h-2 rounded ${strengthColor[strength]}`}
                           style={{ width: `${(strength / 4) * 100}%` }}
                         />
                       </div>
-                      <p className="text-xs text-slate-500">
+                      <p className="mt-1 text-xs text-slate-500">
                         Strength: {strengthText[strength]}
                       </p>
                     </div>
@@ -283,21 +301,22 @@ export default function SignupPage() {
           </Formik>
         </div>
       </div>
+
+      {/* ---------------- OTP MODAL ---------------- */}
+
       <Modal open={otpModalOpen} onClose={() => setOtpModalOpen(false)}>
         <div className="space-y-5">
-          <h3 className="text-xl font-bold text-center">Verify OTP</h3>
+          <h3 className="text-center text-xl font-bold">Verify OTP</h3>
 
-          <p className="text-sm text-center text-slate-500">
+          <p className="text-center text-sm text-slate-500">
             OTP sent to <strong>{registeredEmail}</strong>
           </p>
 
-          <div className="flex gap-3 justify-center">
+          <div className="flex justify-center gap-3">
             {otp.map((digit, index) => (
               <Input
                 key={index}
-                ref={(el) => {
-                  inputRefs.current[index] = el;
-                }}
+                ref={(el) => { inputRefs.current[index] = el; }}
                 value={digit}
                 inputMode="numeric"
                 maxLength={1}
@@ -323,7 +342,7 @@ export default function SignupPage() {
               <button
                 onClick={handleResendOtp}
                 disabled={resendLoading}
-                className="underline font-medium"
+                className="font-medium underline"
               >
                 {resendLoading ? "Sending..." : "Resend OTP"}
               </button>

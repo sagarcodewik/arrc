@@ -1,9 +1,9 @@
 import classNames from 'classnames';
 import styles from './style.module.scss';
-import { JSX } from 'react';
+import { ReactNode } from 'react';
 
 interface ISection {
-  children: JSX.Element;
+  children: ReactNode;
   customClass?: string;
   refInSection?: any;
 }

@@ -119,10 +119,13 @@ const LoginPage = () => {
                         url: API_LOGIN,
                         values,
                       });
+                      if (!response.success){
+                       ShowToast("Invalid Credentilals", "error");
+                      }else{
+                        ShowToast("Login successful", "success");
+                        dispatch(onLoginSuccess({ data: response.data }));
+                      }
 
-                      dispatch(onLoginSuccess({ data: response.data }));
-
-                      ShowToast("Login successful", "success");
 
                       router.push("/dashboard");
                     } catch (error) {

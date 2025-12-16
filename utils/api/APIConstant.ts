@@ -20,4 +20,10 @@ export const API_FAQS_LIST: string = "admin/faq/all";
 export const API_CREATE_CONTACTUS: string = "admin/createcontact"; 
 
 
+// member card
+export const API_MEMBER_CARD: string = "/member-card/get-memebercard";
 
+export const API_MEMBER_CARD_DOWNLOAD: string = "/member-card/file";
+
+// // tvm/calculate
+export const API_TVM_CALCULATE: string = "/tvm/calculate";

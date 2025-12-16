@@ -1,8 +1,8 @@
 'use client';
-import { JSX, useEffect, useState } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 interface IAnimateSection {
-  children: JSX.Element;
+  children: ReactNode;
 }
 
 const AnimateSection = ({ children }: IAnimateSection) => {

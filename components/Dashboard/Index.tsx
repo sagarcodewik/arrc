@@ -5,6 +5,7 @@ import Section from "../Section";
 import { Button } from "../ui/Button";
 import { FiActivity, FiBarChart2 } from "react-icons/fi";
 import { Wallet, DollarSign, TrendingUp, CreditCard, Sparkles, ChevronUp, ChevronDown, Send, QrCode, Copy, Download, Trophy, Star, Gift, Rocket, Target, Zap, Store,} from "lucide-react";
+import MemberCardWidget from "@/components/MemberCardWidget";
 
 type StatItem = { title: string; value: string | number; delta: string; subLabel: string; icon: React.ReactNode;};
 

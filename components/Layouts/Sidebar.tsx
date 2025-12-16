@@ -35,27 +35,27 @@ const mainNavLinks: NavLink[] = [
   },
   {
     label: "Portfolio",
-    href: "/Portfolio",
+    href: "/portfolio",
     icon: <TrendingUp className="w-5 h-5 text-blue-600" />,
   },
   {
     label: "Transactions",
-    href: "/Transactions",
+    href: "/transactions",
     icon: <CreditCard className="w-5 h-5 text-orange-600" />,
   },
   {
     label: "Markets",
-    href: "/Markets",
+    href: "/markets",
     icon: <MapPin className="w-5 h-5 text-red-600" />,
   },
   {
     label: "Member Card",
-    href: "/MemberCard",
+    href: "/member-card",
     icon: <Crown className="w-5 h-5 text-amber-600" />,
   },
   {
     label: "TVM Calculator",
-    href: "/LetsLevelUp",
+    href: "/tvm",
     icon: <Calculator className="w-5 h-5 text-emerald-600" />,
   },
 ];
@@ -64,17 +64,17 @@ const mainNavLinks: NavLink[] = [
 const businessNavLinks: NavLink[] = [
   {
     label: "Business Dashboard",
-    href: "/BusinessSuite",
+    href: "/business",
     icon: <Briefcase className="w-5 h-5 text-indigo-600" />,
   },
   {
     label: "Analytics",
-    href: "/BusinessAnalytics",
+    href: "/analystics",
     icon: <TrendingUp className="w-5 h-5 text-emerald-600" />,
   },
   {
     label: "Feature Your Business",
-    href: "/BusinessAdvertising",
+    href: "/features",
     icon: <Sparkles className="w-5 h-5 text-pink-600" />,
   },
 ];
@@ -194,7 +194,7 @@ function SidebarContent({ onClose }: { onClose?: () => void }) {
 
       <ul className="mt-auto border-t border-gray-100 p-4 space-y-1">
         <li>
-          <Link href="/About" className="group bg-white flex items-center gap-2 rounded-xl p-2 text-sm font-medium transition-all duration-200 hover:bg-slate-100">
+          <Link href="/about" className="group bg-white flex items-center gap-2 rounded-xl p-2 text-sm font-medium transition-all duration-200 hover:bg-slate-100">
             <CircleHelp className="w-5 h-5 text-gray-600" />
             <span className="truncate">About</span>
           </Link>

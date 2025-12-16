@@ -173,3 +173,15 @@ export const getFilterApi = async ({
     return err?.response?.data;
   }
 };
+
+export const downloadFile = async (url: string): Promise<Blob | null> => {
+  try {
+    const res = await defaultAxios.get(url, {
+      responseType: "blob",
+    });
+    return res.data;
+  } catch (error: any) {
+    ShowToast("Failed to download file", "error");
+    return null;
+  }
+};
