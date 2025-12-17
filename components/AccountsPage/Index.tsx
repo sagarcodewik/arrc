@@ -46,20 +46,18 @@ export default function AccountsPage() {
 
   const handleSync = async () => {
     try {
-      setLoading(true);
       setSyncing(true);
       await getApiWithOutQuery({ url: API_PLAID_ACCOUNTS });
       await loadAccounts();
     } finally {
       setSyncing(false);
-      setLoading(false);
+     
     }
   };
 
   const handleConnectBank = async () => {
     try {
-      setLoading(true);
-
+ 
       const res = await apiPost({
         url: API_PLAID_CREATE_LINK_TOKEN,
         values: {},
