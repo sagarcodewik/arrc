@@ -2,6 +2,8 @@
 import { Bell, ChevronDown, Menu } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { Button } from "../ui/Button";
+import { API_GET_PROFILE } from "@/utils/api/APIConstant";
+import { apiPost,getApiWithOutQuery } from "@/utils/endpoints/common";
 export default function Header({
   onMenuClick,
 }: {
@@ -11,7 +13,29 @@ export default function Header({
   const [userOpen, setUserOpen] = useState(false);
   const notifRef = useRef<HTMLDivElement>(null);
   const userRef = useRef<HTMLDivElement>(null);
+  const [profile, setProfile] = useState<any>(null);
+  const [profileLoading, setProfileLoading] = useState(true);
 
+  const loadProfile = async () => {
+  try {
+    setProfileLoading(true);
+
+    const res = await getApiWithOutQuery({
+      url: API_GET_PROFILE,
+    });
+
+    setProfile(res?.data || null);
+  } catch (error) {
+    console.error("Failed to load profile", error);
+    setProfile(null);
+  } finally {
+    setProfileLoading(false);
+  }
+};
+
+useEffect(() => {
+  loadProfile();
+}, []);
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
       if (
@@ -38,7 +62,7 @@ export default function Header({
         <Button size="icon" onClick={onMenuClick} className="!bg-black lg:hidden inline-flex items-center justify-center rounded-lg p-2 hover:bg-gray-100"><Menu className="h-5 w-5" /></Button>
         <div className="flex-1">
           <h3 className="text-xl lg:text-2xl text-slate-900 font-semibold antialiased line-clamp-1">Dashboard </h3>
-          <p className="text-sm font-normal antialiased line-clamp-1 hidden lg:block">Welcome back, sagar.codewik!</p>
+          <p className="text-sm font-normal antialiased line-clamp-1 hidden lg:block">Welcome back, {profile?.email|| "User"}!</p>
         </div>
         <div className="relative" ref={notifRef}>
           <Button variant="link" size="icon" onClick={() => {setNotifOpen(!notifOpen); setUserOpen(false); }} className="!rounded-full hover:bg-gray-100">

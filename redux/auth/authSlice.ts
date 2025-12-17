@@ -53,25 +53,13 @@ const authSlice = createSlice({
       state.loading = false;
     },
     onLogoutSuccess(state) {
-  state.loading = false;
-  state.isAuthenticated = false;
-  localStorage.removeItem("persist:root");
-  state.token = null;         
-  state.user = {};            
-}
+    state.loading = false;
+    state.isAuthenticated = false;
+    localStorage.removeItem("persist:root");
+    state.token = null;         
+    state.user = {};            
+    }
 
-    // onLogoutSuccess(state) {
-    //   state.loading = false;
-    //   state.isAuthenticated = false;
-    //   localStorage.removeItem("persist:root");
-    //   state.token = "";
-    // },
-
-    
-    // onRegisterRequest(state) {
-    //   state.loading = false;
-    // },
-    // onRegisterSuccess(state, action)
   },
 });
 

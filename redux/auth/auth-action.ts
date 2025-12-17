@@ -205,7 +205,6 @@ export const RegisterUser = createAsyncThunk(
     try {
 
     } catch (err: any) {
-      // dispatch(onLoginFailed());
       ShowToast(err?.response?.data?.error, "error");
       return err?.response?.data;
     }
