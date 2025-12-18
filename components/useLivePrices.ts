@@ -11,7 +11,7 @@ const API_KEY = process.env.NEXT_PUBLIC_FINNHUB_KEY!;
 
 export function useLivePrices(data: any[]) {
   const [prices, setPrices] = useState<Record<string, number>>({});
-   console.log("prices in use live =================>",prices)
+
   useEffect(() => {
     if (!data.length) return;
 
@@ -31,7 +31,7 @@ export function useLivePrices(data: any[]) {
             const json = await res.json();
 
             if (json?.c) {
-              result[item._id] = json.c; // current price
+              result[item._id] = json.c;
             }
           })
         );
