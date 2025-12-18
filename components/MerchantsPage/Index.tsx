@@ -6,6 +6,10 @@ import { Button } from "../ui/Button";
 import Modal from "../ui/Modal";
 import { CircleCheckBig, Filter, Plus, RefreshCw, Sparkles, Trash2, Zap } from "lucide-react";
 import { FaCircleNotch } from "react-icons/fa";
+import { IoSearchOutline } from "react-icons/io5";
+import Input from "../ui/Input";
+import { HiArrowTrendingDown, HiArrowTrendingUp } from "react-icons/hi2";
+import { LuBuilding } from "react-icons/lu";
 
 const MerchantsPage = () => {
   const [active, setActive] = useState(false);
@@ -45,167 +49,218 @@ const MerchantsPage = () => {
       <AnimateSection>
         <Section customClass="relative mb-6">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
+            <div className="sm:col-span-2 lg:col-span-3">
+             <Input controlId="search" placeholder="Search merchants..." leftIcon={<IoSearchOutline className="h-4 w-4 lg:h-5 lg:w-5" />} variant="default" size="lg" className="!bg-white shadow-sm"/>
+            </div>
             <div className="sm:col-span-2 lg:col-span-3 flex flex-wrap gap-2 lg:gap-3">
              <div className="flex items-center gap-2 w-full sm:w-auto">
                <Filter className="w-3 h-3 lg:w-4 lg:h-4 text-slate-500" />
                <span className="text-xs lg:text-sm font-medium text-slate-600">Filter by category:</span>
              </div>
-             <Button variant={active ? "cyan" : "outline"} size="sm" rounded="full" className="!rounded-full h-auto py-2">All Categories</Button>
+             <Button variant={active ? "cyan" : "cyan"} size="sm" rounded="full" className="!rounded-full h-auto py-2">All Categories</Button>
+             <Button variant={active ? "cyan" : "outline"} size="sm" rounded="full" className="!rounded-full h-auto py-2">Grocery</Button>
+             <Button variant={active ? "cyan" : "outline"} size="sm" rounded="full" className="!rounded-full h-auto py-2">Gas</Button>
+             <Button variant={active ? "cyan" : "outline"} size="sm" rounded="full" className="!rounded-full h-auto py-2">Dining</Button>
+             <Button variant={active ? "cyan" : "outline"} size="sm" rounded="full" className="!rounded-full h-auto py-2">Retail</Button>
+             <Button variant={active ? "cyan" : "outline"} size="sm" rounded="full" className="!rounded-full h-auto py-2">Entertainment</Button>
+             <Button variant={active ? "cyan" : "outline"} size="sm" rounded="full" className="!rounded-full h-auto py-2">Travel</Button>
+             <Button variant={active ? "cyan" : "outline"} size="sm" rounded="full" className="!rounded-full h-auto py-2">Healthcare</Button>
+             <Button variant={active ? "cyan" : "outline"} size="sm" rounded="full" className="!rounded-full h-auto py-2">other</Button>
             </div>
-            <div className="rounded-2xl bg-gradient-to-br from-white to-slate-50 border border-purple-200 shadow-purple-100 shadow-sm flex flex-col h-full hover:-translate-y-1 hover:shadow-xl transition-all duration-500">
-              <div className="p-6 flex items-start justify-between gap-4">
-              <div className="flex items-center gap-3">
-              <span className="text-3xl">🏦</span>
-              <div>
-                <h3 className="font-semibold text-lg text-slate-900 tracking-tight">Charles Schwab IRA (Demo)</h3>
-                <p className="text-sm text-slate-600">Charles Schwab</p>
+            <div className="flex flex-col h-full rounded-2xl bg-gradient-to-br from-white to-slate-50 border border-slate-200 shadow-sm hover:-translate-y-1 hover:shadow-xl transition-all duration-500">
+              <div className="p-6 space-y-1.5">
+                <div className="flex justify-between items-start">
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 flex items-center justify-center rounded-lg bg-white border border-slate-200 overflow-hidden">
+                      <img src="https://upload.wikimedia.org/wikipedia/en/thumb/d/d3/Starbucks_Corporation_Logo_2011.svg/1200px-Starbucks_Corporation_Logo_2011.svg.png" alt="Starbucks logo" className="w-8 h-8 object-contain"/>
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-semibold text-slate-900">Starbucks</h3>
+                      <p className="text-sm font-medium text-slate-500 capitalize">dining</p>
+                    </div>
+                  </div>
+                  <span className="inline-flex items-center gap-1 rounded-full border border-yellow-200 bg-yellow-100 px-2.5 py-0.5 text-xs font-semibold text-yellow-800">⭐ Featured</span>
+                </div>
               </div>
-              </div>
-              <div className="flex flex-col items-end gap-2">
-              <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold bg-emerald-100 text-emerald-800 border-emerald-200">
-                <CircleCheckBig size={14} className="mr-1" /> connected
-              </div>
-              <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold bg-purple-100 text-purple-800 border-purple-300">
-                <Sparkles size={14} className="mr-1" /> Demo
-              </div>
-              </div>
-              </div>
-              <div className="p-6 pt-0 space-y-4 flex-grow">
-              <div className="p-4 rounded-2xl border bg-purple-50/70 border-purple-200/80">
-              <div className="text-sm text-slate-500">Current Balance</div>
-              <div className="text-2xl font-bold text-slate-900">$75,000.00</div>
-              <p className="text-xs text-purple-600 mt-1">Sample balance for testing</p>
-              </div>
-              <div className="text-xs text-slate-500 space-y-1">
-              <p><strong>Account Type:</strong> <span className="capitalize">ira</span></p>
-              <p><strong>Account Number:</strong> •••• 9012</p>
-              <p><strong>Last Sync:</strong> 12/9/2025, 3:53:08 PM</p>
-              </div>
+              <div className="p-6 pt-0 flex-grow space-y-4">
+                <p className="text-sm text-slate-600 leading-relaxed">America's favorite coffee chain offering premium coffee, teas, and food items.</p>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="rounded-lg border border-slate-200 bg-slate-100/70 p-3">
+                    <div className="text-xs font-medium text-slate-500 flex items-center gap-1">% Reward Rate</div>
+                    <div className="text-xl font-bold text-cyan-700">0.035%</div>
+                  </div>
+                  <div className="rounded-lg border border-slate-200 bg-slate-100/70 p-3">
+                    <div className="text-xs font-medium text-slate-500 flex items-center gap-1">🏢 Stock</div>
+                    <div className="text-xl font-bold text-slate-800">SBUX</div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 text-sm">
+                  <span className="w-2 h-2 rounded-full bg-slate-500"></span>
+                  <span className="text-slate-500 font-medium">Price:</span>
+                  <span className="font-bold text-slate-800">$262.48</span>
+                  <span className="flex items-center gap-1 font-bold text-emerald-600"><HiArrowTrendingUp /> 1.31%</span>
+                  <span className="text-xs font-medium text-slate-400">(Delayed)</span>
+                </div>
               </div>
               <div className="p-6 pt-0">
-              <Button variant="dangerOutline" size="default" rounded="lg" type="button" className="inline-flex items-center justify-center gap-2 whitespace-nowrap w-full"><Trash2 size={18} className="flex-shrink-0"/> <span>Remove Demo</span></Button>
+                <Button variant="outline" size="default" rounded="lg" type="button" className="inline-flex items-center justify-center gap-2 whitespace-nowrap w-full">👑 Reward Tiers</Button>
               </div>
             </div>
-            <div className="rounded-2xl bg-gradient-to-br from-white to-slate-50 border border-purple-200 shadow-purple-100 shadow-sm flex flex-col h-full hover:-translate-y-1 hover:shadow-xl transition-all duration-500">
-              <div className="p-6 flex items-start justify-between gap-4">
-              <div className="flex items-center gap-3">
-              <span className="text-3xl">⚓</span>
-              <div>
-                <h3 className="font-semibold text-lg text-slate-900 tracking-tight">Vanguard Roth IRA (Demo)</h3>
-                <p className="text-sm text-slate-600">Vanguard</p>
+            <div className="flex flex-col h-full rounded-2xl bg-gradient-to-br from-white to-slate-50 border border-slate-200 shadow-sm hover:-translate-y-1 hover:shadow-xl transition-all duration-500">
+              <div className="p-6 space-y-1.5">
+                <div className="flex justify-between items-start">
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 flex items-center justify-center rounded-lg bg-white border border-slate-200 overflow-hidden">
+                      <div className="bg-gradient-to-r from-slate-100 to-slate-200 rounded-lg w-8 h-8 flex items-center justify-center">
+                        <LuBuilding className="object-contain"/>
+                      </div>
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-semibold text-slate-900">Target</h3>
+                      <p className="text-sm font-medium text-slate-500 capitalize">retail</p>
+                    </div>
+                  </div>
+                  <span className="inline-flex items-center gap-1 rounded-full border border-yellow-200 bg-yellow-100 px-2.5 py-0.5 text-xs font-semibold text-yellow-800">⭐ Featured</span>
+                </div>
               </div>
-              </div>
-              <div className="flex flex-col items-end gap-2">
-               <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold bg-emerald-100 text-emerald-800 border-emerald-200">
-                <CircleCheckBig size={14} className="mr-1" /> connected
-               </div>
-               <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold bg-purple-100 text-purple-800 border-purple-300">
-                <Sparkles size={14} className="mr-1" /> Demo
-               </div>
-              </div>
-              </div>
-              <div className="p-6 pt-0 space-y-4 flex-grow">
-               <div className="p-4 rounded-2xl border bg-purple-50/70 border-purple-200/80">
-                <div className="text-sm text-slate-500">Current Balance</div>
-                <div className="text-2xl font-bold text-slate-900">$75,000.00</div>
-                <p className="text-xs text-purple-600 mt-1">Sample balance for testing</p>
-               </div>
-               <div className="text-xs text-slate-500 space-y-1">
-                <p><strong>Account Type:</strong> <span className="capitalize">roth ira</span></p>
-                <p><strong>Account Number:</strong> •••• 5678</p>
-                <p><strong>Last Sync:</strong> 12/9/2025, 3:53:08 PM</p>
-               </div>
+              <div className="p-6 pt-0 flex-grow space-y-4">
+                <p className="text-sm text-slate-600 leading-relaxed">One-stop shopping destination for home, clothing, electronics, and groceries.</p>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="rounded-lg border border-slate-200 bg-slate-100/70 p-3">
+                    <div className="text-xs font-medium text-slate-500 flex items-center gap-1">% Reward Rate</div>
+                    <div className="text-xl font-bold text-cyan-700">0.025%</div>
+                  </div>
+                  <div className="rounded-lg border border-slate-200 bg-slate-100/70 p-3">
+                    <div className="text-xs font-medium text-slate-500 flex items-center gap-1">🏢 Stock</div>
+                    <div className="text-xl font-bold text-slate-800">TGT</div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 text-sm">
+                  <span className="w-2 h-2 rounded-full bg-slate-500"></span>
+                  <span className="text-slate-500 font-medium">Price:</span>
+                  <span className="font-bold text-slate-800">$187.38</span>
+                  <span className="flex items-center gap-1 font-bold text-red-600"><HiArrowTrendingDown /> -0.10%</span>
+                  <span className="text-xs font-medium text-slate-400">(Delayed)</span>
+                </div>
               </div>
               <div className="p-6 pt-0">
-              <Button variant="dangerOutline" size="default" rounded="lg" type="button" className="inline-flex items-center justify-center gap-2 whitespace-nowrap w-full"><Trash2 size={18} className="flex-shrink-0"/> <span>Remove Demo</span></Button>
+                <Button variant="outline" size="default" rounded="lg" type="button" className="inline-flex items-center justify-center gap-2 whitespace-nowrap w-full">👑 Reward Tiers</Button>
               </div>
             </div>
-            <div className="rounded-2xl bg-gradient-to-br from-white to-slate-50 border border-purple-200 shadow-purple-100 shadow-sm flex flex-col h-full hover:-translate-y-1 hover:shadow-xl transition-all duration-500">
-              <div className="p-6 flex items-start justify-between gap-4">
-               <div className="flex items-center gap-3">
-               <span className="text-3xl">🏛️</span>
-               <div>
-                <h3 className="font-semibold text-lg text-slate-900 tracking-tight">Fidelity Brokerage (Demo)</h3>
-                <p className="text-sm text-slate-600">Fidelity</p>
-               </div>
-               </div>
-               <div className="flex flex-col items-end gap-2">
-               <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold bg-emerald-100 text-emerald-800 border-emerald-200">
-                <CircleCheckBig size={14} className="mr-1" /> connected
-               </div>
-               <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold bg-purple-100 text-purple-800 border-purple-300">
-                <Sparkles size={14} className="mr-1" /> Demo
-               </div>
-               </div>
+            <div className="flex flex-col h-full rounded-2xl bg-gradient-to-br from-white to-slate-50 border border-slate-200 shadow-sm hover:-translate-y-1 hover:shadow-xl transition-all duration-500">
+              <div className="p-6 space-y-1.5">
+                <div className="flex justify-between items-start">
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 flex items-center justify-center rounded-lg bg-white border border-slate-200 overflow-hidden">
+                      <div className="bg-gradient-to-r from-slate-100 to-slate-200 rounded-lg w-8 h-8 flex items-center justify-center">
+                        <LuBuilding className="object-contain"/>
+                      </div>
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-semibold text-slate-900">Apple</h3>
+                      <p className="text-sm font-medium text-slate-500 capitalize">retail</p>
+                    </div>
+                  </div>
+                  <span className="inline-flex items-center gap-1 rounded-full border border-yellow-200 bg-yellow-100 px-2.5 py-0.5 text-xs font-semibold text-yellow-800">⭐ Featured</span>
+                </div>
               </div>
-              <div className="p-6 pt-0 space-y-4 flex-grow">
-               <div className="p-4 rounded-2xl border bg-purple-50/70 border-purple-200/80">
-                <div className="text-sm text-slate-500">Current Balance</div>
-                <div className="text-2xl font-bold text-slate-900">$25,000.00</div>
-                <p className="text-xs text-purple-600 mt-1">Sample balance for testing</p>
-               </div>
-               <div className="text-xs text-slate-500 space-y-1">
-                <p><strong>Account Type:</strong> <span className="capitalize">brokerage</span></p>
-                <p><strong>Account Number:</strong> •••• 1234</p>
-                <p><strong>Last Sync:</strong> 12/9/2025, 3:53:08 PM</p>
-               </div>
+              <div className="p-6 pt-0 flex-grow space-y-4">
+                <p className="text-sm text-slate-600 leading-relaxed">Premium technology products including iPhone, iPad, Mac, and accessories.</p>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="rounded-lg border border-slate-200 bg-slate-100/70 p-3">
+                    <div className="text-xs font-medium text-slate-500 flex items-center gap-1">% Reward Rate</div>
+                    <div className="text-xl font-bold text-cyan-700">0.02%</div>
+                  </div>
+                  <div className="rounded-lg border border-slate-200 bg-slate-100/70 p-3">
+                    <div className="text-xs font-medium text-slate-500 flex items-center gap-1">🏢 Stock</div>
+                    <div className="text-xl font-bold text-slate-800">AAPL</div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 text-sm">
+                  <span className="w-2 h-2 rounded-full bg-slate-500"></span>
+                  <span className="text-slate-500 font-medium">Price:</span>
+                  <span className="font-bold text-slate-800">$174.80</span>
+                  <span className="flex items-center gap-1 font-bold text-red-600"><HiArrowTrendingDown /> -1.02%</span>
+                  <span className="text-xs font-medium text-slate-400">(Delayed)</span>
+                </div>
               </div>
               <div className="p-6 pt-0">
-              <Button variant="dangerOutline" size="default" rounded="lg" type="button" className="inline-flex items-center justify-center gap-2 whitespace-nowrap w-full"><Trash2 size={18} className="flex-shrink-0"/> <span>Remove Demo</span></Button>
+                <Button variant="outline" size="default" rounded="lg" type="button" className="inline-flex items-center justify-center gap-2 whitespace-nowrap w-full">👑 Reward Tiers</Button>
+              </div>
+            </div>
+            <div className="flex flex-col h-full rounded-2xl bg-gradient-to-br from-white to-slate-50 border border-slate-200 shadow-sm hover:-translate-y-1 hover:shadow-xl transition-all duration-500">
+              <div className="p-6 space-y-1.5">
+               <div className="flex justify-between items-start gap-4">
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className="w-12 h-12 flex items-center justify-center rounded-lg bg-white border border-slate-200 overflow-hidden shrink-0">
+                    <img src="/images/logo.png" alt="Logo" className="w-8 h-8 object-contain rounded-lg"/>
+                  </div>
+                  <div className="min-w-0">
+                    <h3 className="text-lg font-semibold text-slate-900 truncate">Amiri Royalty Rewards Club, LLC</h3>
+                    <p className="text-sm font-medium text-slate-500 capitalize">Retail</p>
+                  </div>
+                </div>
+                <span className="inline-flex items-center gap-1 rounded-full border border-yellow-200 bg-yellow-100 px-2.5 py-0.5 text-xs font-semibold text-yellow-800 whitespace-nowrap">
+                  ⭐ Featured
+                </span>
+               </div>
+              </div>
+              <div className="p-6 pt-0 flex-grow space-y-4">
+                <p className="text-sm text-slate-600 leading-relaxed">Premium organic and natural foods supermarket chain.</p>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="rounded-lg border border-slate-200 bg-slate-100/70 p-3">
+                    <div className="text-xs font-medium text-slate-500 flex items-center gap-1">% Reward Rate</div>
+                    <div className="text-xl font-bold text-cyan-700">0.04%</div>
+                  </div>
+                  <div className="rounded-lg border border-slate-200 bg-slate-100/70 p-3">
+                    <div className="text-xs font-medium text-slate-500 flex items-center gap-1">🏢 Stock</div>
+                    <div className="text-xl font-bold text-slate-800">AMZN</div>
+                  </div>
+                </div>
+              </div>
+              <div className="p-6 pt-0">
+                <Button variant="outline" size="default" rounded="lg" type="button" className="inline-flex items-center justify-center gap-2 whitespace-nowrap w-full">👑 Reward Tiers</Button>
+              </div>
+            </div>
+            <div className="flex flex-col h-full rounded-2xl bg-gradient-to-br from-white to-slate-50 border border-slate-200 shadow-sm hover:-translate-y-1 hover:shadow-xl transition-all duration-500">
+              <div className="p-6 space-y-1.5">
+               <div className="flex justify-between items-start gap-4">
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className="w-12 h-12 flex items-center justify-center rounded-lg bg-white border border-slate-200 overflow-hidden shrink-0">
+                    <div className="bg-gradient-to-r from-slate-100 to-slate-200 rounded-lg w-8 h-8 flex items-center justify-center">
+                      <LuBuilding className="object-contain"/>
+                    </div>
+                  </div>
+                  <div className="min-w-0">
+                    <h3 className="text-lg font-semibold text-slate-900 truncate">Admin Overview</h3>
+                    <p className="text-sm font-medium text-slate-500 capitalize">other</p>
+                  </div>
+                </div>
+                <span className="inline-flex items-center gap-1 rounded-full border border-yellow-200 bg-yellow-100 px-2.5 py-0.5 text-xs font-semibold text-yellow-800 whitespace-nowrap">
+                  ⭐ Featured
+                </span>
+               </div>
+              </div>
+              <div className="p-6 pt-0 flex-grow space-y-4">
+                <p className="text-sm text-slate-600 leading-relaxed">Premium organic and natural foods supermarket chain.</p>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="rounded-lg border border-slate-200 bg-slate-100/70 p-3">
+                    <div className="text-xs font-medium text-slate-500 flex items-center gap-1">% Reward Rate</div>
+                    <div className="text-xl font-bold text-cyan-700">0.04%</div>
+                  </div>
+                  <div className="rounded-lg border border-slate-200 bg-slate-100/70 p-3">
+                    <div className="text-xs font-medium text-slate-500 flex items-center gap-1">🏢 Stock</div>
+                    <div className="text-xl font-bold text-slate-800">AMZN</div>
+                  </div>
+                </div>
+              </div>
+              <div className="p-6 pt-0">
+                <Button variant="outline" size="default" rounded="lg" type="button" className="inline-flex items-center justify-center gap-2 whitespace-nowrap w-full">👑 Reward Tiers</Button>
               </div>
             </div>
           </div>
         </Section>
       </AnimateSection>
-
-      {/* Modal Start */}
-      <Modal open={openAccountModal} onClose={() => setOpenAccountModal(false)} variant="transparent" rounded="none" maxWidth="2xl" showCloseButton={false}>
-        <div className="flex flex-col gap-6 w-full text-slate-700 lg:p-4">
-          {showFirst ? (
-            <div className="rounded-2xl border bg-white/95 backdrop-blur-sm border-purple-200 shadow-lg">
-              <div className="flex flex-col space-y-1.5 p-6">
-                <h3 className="text-2xl font-semibold tracking-tight flex items-center gap-2 text-purple-600"><Sparkles /> Explore with Demo Mode</h3>
-              </div>
-              <div className="p-6 pt-0 space-y-4">
-                <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
-                  <p className="text-purple-900 mb-3 font-semibold">🎮 Try ARRC Risk-Free</p>
-                  <p className="text-purple-800 text-sm mb-4">Plaid integration isn't configured yet, but you can explore all features with realistic demo accounts!</p>
-                  <div className="bg-white/50 rounded p-3 border border-purple-200">
-                    <p className="text-sm text-purple-700"><strong>Demo accounts include:</strong></p>
-                    <ul className="list-disc list-inside ml-2 mt-2 space-y-1 text-sm text-purple-700">
-                      <li>Fidelity Brokerage - $25,000</li>
-                      <li>Vanguard Roth IRA - $50,000</li>
-                      <li>Charles Schwab IRA - $75,000</li>
-                    </ul>
-                  </div>
-                </div>
-                <Button variant="gradientPurplePink" size="default" rounded="lg" className="inline-flex items-center justify-center gap-2 w-full" onClick={() => setShowFirst(false)}><Sparkles /> Create Demo Accounts</Button>
-                <p className="text-xs text-center text-slate-500">Perfect for testing and seeing how ARRC works! 🚀</p>
-              </div>
-            </div>
-          ) : (
-            <div className="flex flex-col items-center justify-center gap-4 p-6 rounded-2xl border bg-white/95 backdrop-blur-sm border-purple-200 shadow-lg min-h-64">
-              {!completed ? (
-                <div className="w-full h-full flex flex-col gap-2">
-                  <div className="w-full text-center"><FaCircleNotch size={28} className="text-green-700 animate-spin mx-auto" /></div>
-                  <h3 className="text-xl font-bold text-center">Creating Demo Accounts...</h3>
-                  <p className="text-sm font-normal text-center antialiased">Setting up your demo accounts for exploration.</p>
-                </div>
-              ) : (
-                <div className="w-full h-full flex flex-col gap-2">
-                  <div className="w-full text-center relative">
-                    <CircleCheckBig size={36} className="text-green-700 mx-auto absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 inline-flex animate-ping opacity-75"/>
-                    <CircleCheckBig size={50} className="text-green-700 mx-auto animate-pulse"/>
-                  </div>
-                  <h3 className="text-xl font-bold text-center">Demo Accounts Created!</h3>
-                  <p className="text-sm font-normal text-center antialiased">Your demo accounts are ready to explore. These are sample accounts for testing.</p>
-                  <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold bg-purple-100 text-purple-800 border-purple-300 w-fit mx-auto"><Sparkles size={14} className="mr-1" /> Demo Mode</div>
-                </div>
-              )}
-            </div>
-          )}
-        </div>
-      </Modal>
     </>
   );
 };
