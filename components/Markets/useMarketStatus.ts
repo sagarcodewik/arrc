@@ -33,7 +33,7 @@ export function useMarketStatus() {
         (hours === 0) ||
         (hours === 1 && minutes <= 30);
 
-      setIsOpen(isMarketOpen);
+      setIsOpen(!isMarketOpen);
     };
 
     updateStatus();

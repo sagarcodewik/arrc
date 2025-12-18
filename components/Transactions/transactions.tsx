@@ -15,6 +15,11 @@ import {
   API_PLAID_TRANSACTIONS_SYNC,
 } from "@/utils/api/APIConstant";
 import { getApiWithOutQuery } from "@/utils/endpoints/common";
+import SpendingChart from "@/components/Transactions/SpendingChart";
+import {
+  exportSpendingPDF,
+  exportSpendingExcel,
+} from "../Transactions/exportReports";
 
 type Transaction = {
   _id: string;
@@ -25,12 +30,23 @@ type Transaction = {
   merchantName?: string;
   category?: string[] | null;
 };
-
+type DateRange = "7" | "30" | "90" | "365";
+const rangeLabelMap: Record<DateRange, string> = {
+  "7": "Last 7 days",
+  "30": "Last 30 days",
+  "90": "Last 90 days",
+  "365": "Last year",
+};
 export default function TransactionsPage() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [chartType, setChartType] = useState<"pie" | "bar">("pie");
+  const [dateRange, setDateRange] = useState<DateRange>("30");
+  const [rangeOpen, setRangeOpen] = useState(false);
+
+  const [exportOpen, setExportOpen] = useState(false);
 
   const [activeTab, setActiveTab] = useState<
     "transactions" | "reports" | "categories"
@@ -60,7 +76,16 @@ export default function TransactionsPage() {
       setLoading(false);
     }
   };
+  const isWithinRange = (dateStr: string) => {
+    const txnDate = new Date(dateStr);
+    const now = new Date();
 
+    const days = Number(dateRange);
+    const pastDate = new Date();
+    pastDate.setDate(now.getDate() - days);
+
+    return txnDate >= pastDate && txnDate <= now;
+  };
   const merchantCategories = useMemo(() => {
     const map: Record<string, number> = {};
 
@@ -89,8 +114,35 @@ export default function TransactionsPage() {
     });
   }, [transactions, search, selectedCategory]);
 
+  // const reportData = useMemo(() => {
+  //   const spendingTxns = transactions.filter((t) => t.amount < 0);
+
+  //   let totalSpending = 0;
+  //   const categoryMap: Record<string, number> = {};
+
+  //   spendingTxns.forEach((txn) => {
+  //     const amount = Math.abs(txn.amount);
+  //     totalSpending += amount;
+
+  //     const category = txn.merchantName || txn.name || "Uncategorized";
+  //     categoryMap[category] = (categoryMap[category] || 0) + amount;
+  //   });
+
+  //   const categories = Object.keys(categoryMap);
+
+  //   return {
+  //     totalSpending,
+  //     categoriesCount: categories.length,
+  //     transactionsCount: spendingTxns.length,
+  //     avgTransaction:
+  //       spendingTxns.length > 0 ? totalSpending / spendingTxns.length : 0,
+  //     categoryMap,
+  //   };
+  // }, [transactions]);
   const reportData = useMemo(() => {
-    const spendingTxns = transactions.filter((t) => t.amount < 0);
+    const spendingTxns = transactions
+      .filter((t) => t.amount < 0)
+      .filter((t) => isWithinRange(t.date));
 
     let totalSpending = 0;
     const categoryMap: Record<string, number> = {};
@@ -113,7 +165,7 @@ export default function TransactionsPage() {
         spendingTxns.length > 0 ? totalSpending / spendingTxns.length : 0,
       categoryMap,
     };
-  }, [transactions]);
+  }, [transactions, dateRange]);
 
   return (
     <div className="space-y-6">
@@ -147,7 +199,6 @@ export default function TransactionsPage() {
         />
         <TabButton icon={<SlidersHorizontal size={16} />} label="Rules" />
       </div>
-
       {activeTab === "transactions" && (
         <>
           <div className="relative">
@@ -200,46 +251,145 @@ export default function TransactionsPage() {
           )}
         </>
       )}
-
       {activeTab === "reports" && (
         <div className="rounded-xl border bg-white p-6 shadow-sm">
           <div className="flex items-center justify-between">
             <h3 className="font-semibold text-lg">Spending by Category</h3>
 
             <div className="flex items-center gap-2">
-              <select className="rounded-md border px-3 py-1 text-sm">
-                <option>Last 30 days</option>
-              </select>
+              {/* DATE RANGE DROPDOWN */}
+              <div className="relative">
+                <button
+                  onClick={() => setRangeOpen((v) => !v)}
+                  className="flex items-center gap-2 rounded-md border bg-white px-3 py-1 text-sm"
+                >
+                  {rangeLabelMap[dateRange]}
+                  <svg
+                    className="h-4 w-4 text-gray-500"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </button>
 
-              <button className="rounded-md bg-black px-3 py-1 text-sm text-white">
+                {rangeOpen && (
+                  <div className="absolute right-0 z-50 mt-2 w-44 rounded-md border bg-white shadow-lg">
+                    {(Object.keys(rangeLabelMap) as DateRange[]).map(
+                      (range) => (
+                        <button
+                          key={range}
+                          onClick={() => {
+                            setDateRange(range);
+                            setRangeOpen(false);
+                          }}
+                          className={`flex w-full items-center justify-between px-4 py-2 text-sm hover:bg-gray-100 ${
+                            dateRange === range
+                              ? "font-medium text-black"
+                              : "text-gray-700"
+                          }`}
+                        >
+                          {rangeLabelMap[range]}
+                          {dateRange === range && <span>✓</span>}
+                        </button>
+                      )
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {/* CHART TOGGLE */}
+              <button
+                onClick={() => setChartType("pie")}
+                className={`rounded-md px-3 py-1 text-sm ${
+                  chartType === "pie" ? "bg-black text-white" : "border"
+                }`}
+              >
                 Pie
               </button>
-              <button className="rounded-md border px-3 py-1 text-sm">
+
+              <button
+                onClick={() => setChartType("bar")}
+                className={`rounded-md px-3 py-1 text-sm ${
+                  chartType === "bar" ? "bg-black text-white" : "border"
+                }`}
+              >
                 Bar
               </button>
+              {/* EXPORT */}
+              <div className="relative">
+                <button
+                  onClick={() => setExportOpen((v) => !v)}
+                  className="flex items-center gap-1 rounded-md border bg-white px-3 py-1 text-sm"
+                >
+                  <Download size={14} />
+                  Export
+                </button>
 
-              <button className="flex items-center gap-1 rounded-md border px-3 py-1 text-sm">
-                <Download size={14} /> Export
-              </button>
+                {exportOpen && (
+                  <div className="absolute right-0 z-50 mt-2 w-40 rounded-md border bg-white shadow-lg">
+                    <button
+                      onClick={() => {
+                        exportSpendingPDF(reportData.categoryMap);
+                        setExportOpen(false);
+                      }}
+                      className="w-full px-4 py-2 text-left text-sm hover:bg-gray-100"
+                    >
+                      Download PDF
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        exportSpendingExcel(reportData.categoryMap);
+                        setExportOpen(false);
+                      }}
+                      className="w-full px-4 py-2 text-left text-sm hover:bg-gray-100"
+                    >
+                      Download Excel
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
-          {reportData.transactionsCount === 0 && (
+
+          {/* BODY */}
+          {reportData.transactionsCount === 0 ? (
             <div className="py-20 text-center text-gray-500">
               No transaction data available for this period
             </div>
+          ) : (
+            <>
+              <div className="mt-6 h-[320px] flex items-center justify-center">
+                <SpendingChart
+                  chartType={chartType}
+                  dataMap={reportData.categoryMap}
+                />
+              </div>
+
+              <div className="mt-10 grid grid-cols-4 gap-6 border-t pt-6 text-center">
+                <Stat
+                  label="Total Spending"
+                  value={`$${reportData.totalSpending.toFixed(2)}`}
+                />
+                <Stat label="Categories" value={reportData.categoriesCount} />
+                <Stat
+                  label="Transactions"
+                  value={reportData.transactionsCount}
+                />
+                <Stat
+                  label="Avg per Transaction"
+                  value={`$${reportData.avgTransaction.toFixed(2)}`}
+                />
+              </div>
+            </>
           )}
-          <div className="mt-10 grid grid-cols-4 gap-6 border-t pt-6 text-center">
-            <Stat
-              label="Total Spending"
-              value={`$${reportData.totalSpending.toFixed(2)}`}
-            />
-            <Stat label="Categories" value={reportData.categoriesCount} />
-            <Stat label="Transactions" value={reportData.transactionsCount} />
-            <Stat
-              label="Avg per Transaction"
-              value={`$${reportData.avgTransaction.toFixed(2)}`}
-            />
-          </div>
         </div>
       )}
       {activeTab === "categories" && (
@@ -293,12 +443,12 @@ function TabButton({
     <button
       onClick={onClick}
       className={`flex items-center gap-2 rounded-md px-4 py-2 text-sm font-medium transition
-        ${
-          active
-            ? "bg-white text-gray-900 shadow-sm"
-            : "text-gray-500 hover:bg-white/70"
-        }
-      `}
+          ${
+            active
+              ? "bg-white text-gray-900 shadow-sm"
+              : "text-gray-500 hover:bg-white/70"
+          }
+        `}
     >
       {icon}
       {label}

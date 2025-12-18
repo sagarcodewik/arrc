@@ -38,3 +38,9 @@ export const API_PLAID_ACCOUNT_DELETE = "/plaid/disconnect";
 export const API_PLAID_TRANSACTIONS_SYNC= "/plaid/transactions/sync";
 export const API_PLAID_TRANSACTIONS_DETAILS = "/plaid/transactions";
 
+
+export const API_PORTFOLIO_SUMMARY= "/portfolio/summary";
+export const API_PORTFOLIO_GET= "/portfolio/get-portfolio";
+
+
+export const API_REWARD_CONVERT= "/rewards/convert";

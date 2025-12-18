@@ -16,7 +16,7 @@ export default function MarketStatusBar() {
           }`}
         />
         <span className="font-medium">
-          {isOpen ? "Markets Open" : "Markets Open"}
+          {isOpen ? "Markets Open" : "Markets Closed"}
         </span>
         <span className="text-gray-400">
           {time}
