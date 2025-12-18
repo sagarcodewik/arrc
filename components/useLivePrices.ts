@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 
 const SYMBOL_MAP: Record<string, string> = {
   "United Airlines": "UAL",
-  "INTRST PYMNT": "INTU",
+  // "INTRST PYMNT": "INTU",
 };
 
 const API_KEY = process.env.NEXT_PUBLIC_FINNHUB_KEY!;
