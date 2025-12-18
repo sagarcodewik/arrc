@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import axios from "axios";
 
 const SYMBOL_MAP: Record<string, string> = {
   "United Airlines": "UAL",
@@ -18,18 +19,16 @@ export function useLivePrices(data: any[]) {
     const fetchPrices = async () => {
       try {
         const result: Record<string, number> = {};
-
         await Promise.all(
           data.map(async (item) => {
             const symbol = SYMBOL_MAP[item.assetName];
             if (!symbol) return;
 
-            const res = await fetch(
+            const res = await axios.get(
               `https://finnhub.io/api/v1/quote?symbol=${symbol}&token=${API_KEY}`
             );
 
-            const json = await res.json();
-
+            const json = res.data;
             if (json?.c) {
               result[item._id] = json.c;
             }

@@ -1,4 +1,6 @@
 "use client";
+import { useRouter } from "next/navigation";
+
 import React, { useState } from "react";
 import AnimateSection from "../AnimateSection";
 import Section from "../Section";
@@ -31,6 +33,7 @@ const BADGES = [
 ];
 
 const Dashboard = () => {
+  const router = useRouter();
   const [isOpen, setIsOpen] = useState(true);
   const [question, setQuestion] = useState("");
   const handleQuickClick = (q: string) => {setQuestion(q); setIsOpen(true);};
@@ -41,12 +44,30 @@ const Dashboard = () => {
     console.log("Ask AI:", question);
   };
 
-  const actions = [
-    { icon: QrCode, label: "My QR Code", bg: "from-emerald-400 to-teal-400 hover:from-emerald-500 hover:to-teal-500",},
-    { icon: CreditCard, label: "Link Account", bg: "from-blue-400 to-indigo-400 hover:from-blue-500 hover:to-indigo-500",},
-    { icon: Store, label: "Find Merchants", bg: "from-purple-400 to-pink-400 hover:from-purple-500 hover:to-pink-500",},
-    { icon: TrendingUp, label: "View Portfolio", bg: "from-amber-400 to-orange-400 hover:from-amber-500 hover:to-orange-500",},
-  ];
+ const actions = [
+  {
+    icon: QrCode,
+    label: "My QR Code",
+    bg: "from-emerald-400 to-teal-400 hover:from-emerald-500 hover:to-teal-500",
+    onClick: () => router.push("/member-card"),
+  },
+  {
+    icon: CreditCard,
+    label: "Link Account",
+    bg: "from-blue-400 to-indigo-400 hover:from-blue-500 hover:to-indigo-500",
+  },
+  {
+    icon: Store,
+    label: "Find Merchants",
+    bg: "from-purple-400 to-pink-400 hover:from-purple-500 hover:to-pink-500",
+  },
+  {
+    icon: TrendingUp,
+    label: "View Portfolio",
+    bg: "from-amber-400 to-orange-400 hover:from-amber-500 hover:to-orange-500",
+  },
+];
+
 
   return (
     <>
@@ -231,9 +252,16 @@ const Dashboard = () => {
                 </div>
                 <div className="p-4">
                   <div className="grid grid-cols-2 gap-3">
-                    {actions.map(({ icon: Icon, label, bg }) => (
-                      <button key={label} type="button" className={`flex flex-col items-center justify-center gap-2 rounded-lg border border-slate-200 bg-gradient-to-r ${bg} hover:opacity-90 h-20 text-xs font-medium text-white hover:-translate-y-0.5 hover:shadow-xl transition-all duration-500`}> <Icon className="w-5 h-5 text-white" /> <span>{label}</span></button>
-                    ))}
+                    {actions.map((action, index) => (
+                  <button
+                    key={index}
+                    onClick={action.onClick}
+                    className={`flex items-center gap-3 p-4 rounded-xl text-white bg-gradient-to-r ${action.bg}`}
+                  >
+                    <action.icon className="w-5 h-5" />
+                    <span>{action.label}</span>
+                  </button>
+                ))}
                   </div>
                 </div>
               </div>
@@ -253,9 +281,18 @@ const Dashboard = () => {
                     <h3 className="text-lg lg:text-xl font-semibold text-slate-900 mb-1">Ready for the next step?</h3>
                     <p className="text-sm lg:text-base text-slate-600"> Connect your investment accounts to start earning rewards with every purchase.</p>
                   </div>
-                  <Button variant="sky" size="default" rounded="lg" type="button" className="inline-flex items-center justify-center gap-2 rounded-md text-sm font-medium h-10 px-4 py-2 bg-slate-900 text-white hover:bg-slate-800 transition-colors w-full sm:w-auto">
-                    <CreditCard className="w-4 h-4" />{" "} <span>Link your accounts</span>{" "} <TrendingUp className="w-4 h-4" />
-                  </Button>
+               <Button
+                  variant="sky"
+                  size="default"
+                  rounded="lg"
+                  type="button"
+                  onClick={() => router.push("/accounts")}
+                  className="inline-flex items-center justify-center gap-2 rounded-md text-sm font-medium h-10 px-4 py-2 bg-slate-900 text-white hover:bg-slate-800 transition-colors w-full sm:w-auto"
+                >
+                  <CreditCard className="w-4 h-4" />
+                  <span>Link your accounts</span>
+                  <TrendingUp className="w-4 h-4" />
+                </Button>
                 </div>
               </div>
             </div>
