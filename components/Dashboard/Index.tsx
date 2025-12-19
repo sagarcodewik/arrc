@@ -253,15 +253,15 @@ const Dashboard = () => {
                 <div className="p-4">
                   <div className="grid grid-cols-2 gap-3">
                     {actions.map((action, index) => (
-                  <button
-                    key={index}
-                    onClick={action.onClick}
-                    className={`flex items-center gap-3 p-4 rounded-xl text-white bg-gradient-to-r ${action.bg}`}
-                  >
-                    <action.icon className="w-5 h-5" />
-                    <span>{action.label}</span>
-                  </button>
-                ))}
+                      <button
+                        key={index}
+                        onClick={action.onClick}
+                        className={`flex items-center gap-3 p-4 rounded-xl text-white bg-gradient-to-r ${action.bg}`}
+                      >
+                        <action.icon className="w-5 h-5" />
+                        <span>{action.label}</span>
+                      </button>
+                    ))}
                   </div>
                 </div>
               </div>

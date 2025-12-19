@@ -44,3 +44,10 @@ export const API_PORTFOLIO_GET= "/portfolio/get-portfolio";
 
 
 export const API_REWARD_CONVERT= "/rewards/convert";
+
+
+// categories/all-categories
+export const API_GET_ALL_CATEGORY= "categories/all-categories";
+export const API_GET_CATEGORY_BY_ID = "category-items/list"; 
+
+

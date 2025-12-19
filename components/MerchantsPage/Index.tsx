@@ -4,39 +4,147 @@ import AnimateSection from "../AnimateSection";
 import Section from "../Section";
 import { Button } from "../ui/Button";
 import Modal from "../ui/Modal";
-import { CircleCheckBig, Filter, Plus, RefreshCw, Sparkles, Trash2, Zap } from "lucide-react";
+import {
+  CircleCheckBig,
+  Filter,
+  Plus,
+  RefreshCw,
+  Sparkles,
+  Trash2,
+  Zap,
+} from "lucide-react";
 import { FaCircleNotch } from "react-icons/fa";
+import { IoSearchOutline } from "react-icons/io5";
+import Input from "../ui/Input";
+import { HiArrowTrendingDown, HiArrowTrendingUp } from "react-icons/hi2";
+import { LuBuilding } from "react-icons/lu";
+import {
+  API_GET_ALL_CATEGORY,
+  API_GET_CATEGORY_BY_ID,
+} from "@/utils/api/APIConstant";
+import { apiPost, getApiWithOutQuery } from "@/utils/endpoints/common";
 
+export type Categories = {
+  _id: string;
+  name: string;
+  icon?: string;
+  isActive: boolean;
+  createdAt?: string;
+};
 const MerchantsPage = () => {
   const [active, setActive] = useState(false);
-  
+  const [merchants, setMerchants] = useState<any[]>([]);
   const [openAccountModal, setOpenAccountModal] = useState(false);
   const [showFirst, setShowFirst] = useState(true);
   const [completed, setCompleted] = useState(false);
+  const [categories, setCategories] = useState<Categories[]>([]);
 
-  useEffect(() => {if (openAccountModal) {setShowFirst(true); setCompleted(false);}}, [openAccountModal]);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    if (openAccountModal) {
+      setShowFirst(true);
+      setCompleted(false);
+    }
+  }, [openAccountModal]);
 
   useEffect(() => {
     if (!showFirst) {
       const timer = setTimeout(() => setCompleted(true), 4000);
       const closeTimer = setTimeout(() => setOpenAccountModal(false), 8000);
-      return () => {clearTimeout(timer); clearTimeout(closeTimer);};
+      return () => {
+        clearTimeout(timer);
+        clearTimeout(closeTimer);
+      };
     }
   }, [showFirst]);
 
+  useEffect(() => {
+    loadCategories();
+  }, []);
+  const loadCategories = async () => {
+    try {
+      setLoading(true);
+
+      const res = await getApiWithOutQuery({
+        url: API_GET_ALL_CATEGORY,
+      });
+      const list = Array.isArray(res) ? res : [];
+      setCategories(list);
+    } catch (error) {
+      setCategories([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+  const handleCategoryClick = async (categoryId?: string) => {
+    try {
+      const res = await apiPost({
+        url: API_GET_CATEGORY_BY_ID,
+        values: categoryId ? { categoryId } : {},
+      });
+
+      setMerchants(res?.data || []);
+    } catch (error) {
+      setMerchants([]);
+    }
+  };
+  const NoMerchants = () => {
+    return (
+      <div className="col-span-full flex flex-col items-center justify-center rounded-2xl border border-slate-200 bg-white py-20 text-center">
+        <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-cyan-50">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-8 w-8 text-cyan-600"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M3 7l9-4 9 4v10a2 2 0 01-2 2H5a2 2 0 01-2-2V7z"
+            />
+          </svg>
+        </div>
+
+        <h3 className="text-lg font-semibold text-slate-900">
+          No Merchants Found
+        </h3>
+        <p className="mt-1 text-sm text-slate-500">
+          Try adjusting your search or filter criteria.
+        </p>
+      </div>
+    );
+  };
   return (
     <>
       <AnimateSection>
         <Section customClass="relative mb-6">
           <div className="flex flex-col-reverse md:flex-row md:justify-between md:items-start gap-4 w-full">
             <div className="flex-1">
-            <div className="text-center md:text-left">
-              <h1 className="text-slate-900 text-2xl sm:text-3xl lg:text-3xl font-semibold">Merchant Partners</h1>
-              <p className="text-slate-600 text-sm sm:text-base font-medium">Shop with our partners and earn stock rewards</p>
-            </div>
+              <div className="text-center md:text-left">
+                <h1 className="text-slate-900 text-2xl sm:text-3xl lg:text-3xl font-semibold">
+                  Merchant Partners
+                </h1>
+                <p className="text-slate-600 text-sm sm:text-base font-medium">
+                  Shop with our partners and earn stock rewards
+                </p>
+              </div>
             </div>
             <div className="flex gap-2 items-center justify-center md:justify-end mt-4 md:mt-0 w-full md:w-auto">
-             <Button variant="outline" size="default" rounded="lg" type="button" className="inline-flex items-center justify-center gap-2 whitespace-nowrap"><RefreshCw size={18} className="flex-shrink-0"/> <span>Refresh Data</span></Button>
+              <Button
+                variant="outline"
+                size="default"
+                rounded="lg"
+                type="button"
+                className="inline-flex items-center justify-center gap-2 whitespace-nowrap"
+              >
+                <RefreshCw size={18} className="flex-shrink-0" />{" "}
+                <span>Refresh Data</span>
+              </Button>
             </div>
           </div>
         </Section>
@@ -45,167 +153,115 @@ const MerchantsPage = () => {
       <AnimateSection>
         <Section customClass="relative mb-6">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
+            <div className="sm:col-span-2 lg:col-span-3">
+              <Input
+                controlId="search"
+                placeholder="Search merchants..."
+                leftIcon={<IoSearchOutline className="h-4 w-4 lg:h-5 lg:w-5" />}
+                variant="default"
+                size="lg"
+                className="!bg-white shadow-sm"
+              />
+            </div>
             <div className="sm:col-span-2 lg:col-span-3 flex flex-wrap gap-2 lg:gap-3">
-             <div className="flex items-center gap-2 w-full sm:w-auto">
-               <Filter className="w-3 h-3 lg:w-4 lg:h-4 text-slate-500" />
-               <span className="text-xs lg:text-sm font-medium text-slate-600">Filter by category:</span>
-             </div>
-             <Button variant={active ? "cyan" : "outline"} size="sm" rounded="full" className="!rounded-full h-auto py-2">All Categories</Button>
+              <div className="flex items-center gap-2 w-full sm:w-auto">
+                <Filter className="w-3 h-3 lg:w-4 lg:h-4 text-slate-500" />
+                <span className="text-xs lg:text-sm font-medium text-slate-600">
+                  Filter by category:
+                </span>
+              </div>
+              <Button
+                variant={selectedCategory === null ? "cyan" : "outline"}
+                size="sm"
+                rounded="full"
+                className="!rounded-full h-auto py-2"
+                onClick={() => {
+                  setSelectedCategory(null);
+                  handleCategoryClick();
+                }}
+              >
+                All Categories
+              </Button>
+
+              {categories.length === 0 ? (
+                <span className="text-sm text-slate-400">
+                  Loading categories...
+                </span>
+              ) : (
+                categories.map((cat) => (
+                  <Button
+                    key={cat._id}
+                    variant={selectedCategory === cat._id ? "cyan" : "outline"}
+                    size="sm"
+                    rounded="full"
+                    className="!rounded-full h-auto py-2"
+                    onClick={() => {
+                      setSelectedCategory(cat._id);
+                      handleCategoryClick(cat._id);
+                    }}
+                  >
+                    {cat.name}
+                  </Button>
+                ))
+              )}
             </div>
-            <div className="rounded-2xl bg-gradient-to-br from-white to-slate-50 border border-purple-200 shadow-purple-100 shadow-sm flex flex-col h-full hover:-translate-y-1 hover:shadow-xl transition-all duration-500">
-              <div className="p-6 flex items-start justify-between gap-4">
-              <div className="flex items-center gap-3">
-              <span className="text-3xl">🏦</span>
-              <div>
-                <h3 className="font-semibold text-lg text-slate-900 tracking-tight">Charles Schwab IRA (Demo)</h3>
-                <p className="text-sm text-slate-600">Charles Schwab</p>
-              </div>
-              </div>
-              <div className="flex flex-col items-end gap-2">
-              <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold bg-emerald-100 text-emerald-800 border-emerald-200">
-                <CircleCheckBig size={14} className="mr-1" /> connected
-              </div>
-              <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold bg-purple-100 text-purple-800 border-purple-300">
-                <Sparkles size={14} className="mr-1" /> Demo
-              </div>
-              </div>
-              </div>
-              <div className="p-6 pt-0 space-y-4 flex-grow">
-              <div className="p-4 rounded-2xl border bg-purple-50/70 border-purple-200/80">
-              <div className="text-sm text-slate-500">Current Balance</div>
-              <div className="text-2xl font-bold text-slate-900">$75,000.00</div>
-              <p className="text-xs text-purple-600 mt-1">Sample balance for testing</p>
-              </div>
-              <div className="text-xs text-slate-500 space-y-1">
-              <p><strong>Account Type:</strong> <span className="capitalize">ira</span></p>
-              <p><strong>Account Number:</strong> •••• 9012</p>
-              <p><strong>Last Sync:</strong> 12/9/2025, 3:53:08 PM</p>
-              </div>
-              </div>
-              <div className="p-6 pt-0">
-              <Button variant="dangerOutline" size="default" rounded="lg" type="button" className="inline-flex items-center justify-center gap-2 whitespace-nowrap w-full"><Trash2 size={18} className="flex-shrink-0"/> <span>Remove Demo</span></Button>
-              </div>
-            </div>
-            <div className="rounded-2xl bg-gradient-to-br from-white to-slate-50 border border-purple-200 shadow-purple-100 shadow-sm flex flex-col h-full hover:-translate-y-1 hover:shadow-xl transition-all duration-500">
-              <div className="p-6 flex items-start justify-between gap-4">
-              <div className="flex items-center gap-3">
-              <span className="text-3xl">⚓</span>
-              <div>
-                <h3 className="font-semibold text-lg text-slate-900 tracking-tight">Vanguard Roth IRA (Demo)</h3>
-                <p className="text-sm text-slate-600">Vanguard</p>
-              </div>
-              </div>
-              <div className="flex flex-col items-end gap-2">
-               <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold bg-emerald-100 text-emerald-800 border-emerald-200">
-                <CircleCheckBig size={14} className="mr-1" /> connected
-               </div>
-               <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold bg-purple-100 text-purple-800 border-purple-300">
-                <Sparkles size={14} className="mr-1" /> Demo
-               </div>
-              </div>
-              </div>
-              <div className="p-6 pt-0 space-y-4 flex-grow">
-               <div className="p-4 rounded-2xl border bg-purple-50/70 border-purple-200/80">
-                <div className="text-sm text-slate-500">Current Balance</div>
-                <div className="text-2xl font-bold text-slate-900">$75,000.00</div>
-                <p className="text-xs text-purple-600 mt-1">Sample balance for testing</p>
-               </div>
-               <div className="text-xs text-slate-500 space-y-1">
-                <p><strong>Account Type:</strong> <span className="capitalize">roth ira</span></p>
-                <p><strong>Account Number:</strong> •••• 5678</p>
-                <p><strong>Last Sync:</strong> 12/9/2025, 3:53:08 PM</p>
-               </div>
-              </div>
-              <div className="p-6 pt-0">
-              <Button variant="dangerOutline" size="default" rounded="lg" type="button" className="inline-flex items-center justify-center gap-2 whitespace-nowrap w-full"><Trash2 size={18} className="flex-shrink-0"/> <span>Remove Demo</span></Button>
-              </div>
-            </div>
-            <div className="rounded-2xl bg-gradient-to-br from-white to-slate-50 border border-purple-200 shadow-purple-100 shadow-sm flex flex-col h-full hover:-translate-y-1 hover:shadow-xl transition-all duration-500">
-              <div className="p-6 flex items-start justify-between gap-4">
-               <div className="flex items-center gap-3">
-               <span className="text-3xl">🏛️</span>
-               <div>
-                <h3 className="font-semibold text-lg text-slate-900 tracking-tight">Fidelity Brokerage (Demo)</h3>
-                <p className="text-sm text-slate-600">Fidelity</p>
-               </div>
-               </div>
-               <div className="flex flex-col items-end gap-2">
-               <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold bg-emerald-100 text-emerald-800 border-emerald-200">
-                <CircleCheckBig size={14} className="mr-1" /> connected
-               </div>
-               <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold bg-purple-100 text-purple-800 border-purple-300">
-                <Sparkles size={14} className="mr-1" /> Demo
-               </div>
-               </div>
-              </div>
-              <div className="p-6 pt-0 space-y-4 flex-grow">
-               <div className="p-4 rounded-2xl border bg-purple-50/70 border-purple-200/80">
-                <div className="text-sm text-slate-500">Current Balance</div>
-                <div className="text-2xl font-bold text-slate-900">$25,000.00</div>
-                <p className="text-xs text-purple-600 mt-1">Sample balance for testing</p>
-               </div>
-               <div className="text-xs text-slate-500 space-y-1">
-                <p><strong>Account Type:</strong> <span className="capitalize">brokerage</span></p>
-                <p><strong>Account Number:</strong> •••• 1234</p>
-                <p><strong>Last Sync:</strong> 12/9/2025, 3:53:08 PM</p>
-               </div>
-              </div>
-              <div className="p-6 pt-0">
-              <Button variant="dangerOutline" size="default" rounded="lg" type="button" className="inline-flex items-center justify-center gap-2 whitespace-nowrap w-full"><Trash2 size={18} className="flex-shrink-0"/> <span>Remove Demo</span></Button>
-              </div>
-            </div>
+            {merchants.length === 0 ? (
+              <NoMerchants />
+            ) : (
+              merchants.map((item) => (
+                <div
+                  key={item._id}
+                  className="flex flex-col h-full rounded-2xl bg-gradient-to-br from-white to-slate-50 border border-slate-200 shadow-sm hover:-translate-y-1 hover:shadow-xl transition-all duration-500"
+                >
+                  <div className="p-6 space-y-1.5">
+                    <div className="flex justify-between items-start">
+                      <div className="flex items-center gap-3">
+                        <div className="w-12 h-12 flex items-center justify-center rounded-lg bg-white border border-slate-200">
+                          <LuBuilding />
+                        </div>
+                        <div>
+                          <h3 className="text-lg font-semibold text-slate-900">
+                            {item.name}
+                          </h3>
+                          <p className="text-sm font-medium text-slate-500 capitalize">
+                            {item.categoryId?.slug}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="p-6 pt-0 flex-grow space-y-4">
+                    <p className="text-sm text-slate-600">{item.description}</p>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="rounded-lg border border-slate-200 bg-slate-100/70 p-3">
+                        <div className="text-xs text-slate-500">
+                          % Reward Rate
+                        </div>
+                        <div className="text-xl font-bold text-cyan-700">
+                          {item.rewardRate}%
+                        </div>
+                      </div>
+
+                      <div className="rounded-lg border border-slate-200 bg-slate-100/70 p-3">
+                        <div className="text-xs text-slate-500">🏢 Stock</div>
+                        <div className="text-xl font-bold text-slate-800">
+                          {item.stockSymbol}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="p-6 pt-0">
+                    <Button variant="outline" rounded="lg" className="w-full">
+                      👑 Reward Tiers
+                    </Button>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </Section>
       </AnimateSection>
-
-      {/* Modal Start */}
-      <Modal open={openAccountModal} onClose={() => setOpenAccountModal(false)} variant="transparent" rounded="none" maxWidth="2xl" showCloseButton={false}>
-        <div className="flex flex-col gap-6 w-full text-slate-700 lg:p-4">
-          {showFirst ? (
-            <div className="rounded-2xl border bg-white/95 backdrop-blur-sm border-purple-200 shadow-lg">
-              <div className="flex flex-col space-y-1.5 p-6">
-                <h3 className="text-2xl font-semibold tracking-tight flex items-center gap-2 text-purple-600"><Sparkles /> Explore with Demo Mode</h3>
-              </div>
-              <div className="p-6 pt-0 space-y-4">
-                <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
-                  <p className="text-purple-900 mb-3 font-semibold">🎮 Try ARRC Risk-Free</p>
-                  <p className="text-purple-800 text-sm mb-4">Plaid integration isn't configured yet, but you can explore all features with realistic demo accounts!</p>
-                  <div className="bg-white/50 rounded p-3 border border-purple-200">
-                    <p className="text-sm text-purple-700"><strong>Demo accounts include:</strong></p>
-                    <ul className="list-disc list-inside ml-2 mt-2 space-y-1 text-sm text-purple-700">
-                      <li>Fidelity Brokerage - $25,000</li>
-                      <li>Vanguard Roth IRA - $50,000</li>
-                      <li>Charles Schwab IRA - $75,000</li>
-                    </ul>
-                  </div>
-                </div>
-                <Button variant="gradientPurplePink" size="default" rounded="lg" className="inline-flex items-center justify-center gap-2 w-full" onClick={() => setShowFirst(false)}><Sparkles /> Create Demo Accounts</Button>
-                <p className="text-xs text-center text-slate-500">Perfect for testing and seeing how ARRC works! 🚀</p>
-              </div>
-            </div>
-          ) : (
-            <div className="flex flex-col items-center justify-center gap-4 p-6 rounded-2xl border bg-white/95 backdrop-blur-sm border-purple-200 shadow-lg min-h-64">
-              {!completed ? (
-                <div className="w-full h-full flex flex-col gap-2">
-                  <div className="w-full text-center"><FaCircleNotch size={28} className="text-green-700 animate-spin mx-auto" /></div>
-                  <h3 className="text-xl font-bold text-center">Creating Demo Accounts...</h3>
-                  <p className="text-sm font-normal text-center antialiased">Setting up your demo accounts for exploration.</p>
-                </div>
-              ) : (
-                <div className="w-full h-full flex flex-col gap-2">
-                  <div className="w-full text-center relative">
-                    <CircleCheckBig size={36} className="text-green-700 mx-auto absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 inline-flex animate-ping opacity-75"/>
-                    <CircleCheckBig size={50} className="text-green-700 mx-auto animate-pulse"/>
-                  </div>
-                  <h3 className="text-xl font-bold text-center">Demo Accounts Created!</h3>
-                  <p className="text-sm font-normal text-center antialiased">Your demo accounts are ready to explore. These are sample accounts for testing.</p>
-                  <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold bg-purple-100 text-purple-800 border-purple-300 w-fit mx-auto"><Sparkles size={14} className="mr-1" /> Demo Mode</div>
-                </div>
-              )}
-            </div>
-          )}
-        </div>
-      </Modal>
     </>
   );
 };
