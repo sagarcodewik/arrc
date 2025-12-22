@@ -6,6 +6,7 @@ import { Plus, Zap, Loader2 } from "lucide-react";
 
 import { Button } from "@/components/ui/Button";
 import AccountCard from "./AccountCard";
+import { showLoader, hideLoader } from "@/redux/loaderSlice";
 
 import {
   API_PLAID_CREATE_LINK_TOKEN,
@@ -15,49 +16,57 @@ import {
 } from "@/utils/api/APIConstant";
 
 import { apiPost, getApiWithOutQuery } from "@/utils/endpoints/common";
+import { useDispatch } from "react-redux";
 
 export default function AccountsPage() {
+  const dispatch = useDispatch();
+
   const [plaidToken, setPlaidToken] = useState<string>("");
   const [accounts, setAccounts] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [syncing, setSyncing] = useState(false);
   const [openPlaid, setOpenPlaid] = useState(false);
 
-  const loadAccounts = async () => {
-    try {
-      setLoading(true);
-
-      const res = await getApiWithOutQuery({
-        url: API_PLAID_ACCOUNTS,
-      });
-
-      setAccounts(res?.data || []);
-    } catch (error) {
-      console.error("Failed to load accounts", error);
-      setAccounts([]);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
-    loadAccounts();
+    dispatch(showLoader());
+
+    loadAccounts().finally(() => {
+      dispatch(hideLoader());
+    });
   }, []);
+
+const loadAccounts = async () => {
+  try {
+    setLoading(true);
+
+    const res = await getApiWithOutQuery({
+      url: API_PLAID_ACCOUNTS,
+    });
+
+    setAccounts(res?.data || []);
+  } catch (error) {
+    console.error("Failed to load accounts", error);
+    setAccounts([]);
+  } finally {
+    setLoading(false);
+  }
+};
 
   const handleSync = async () => {
     try {
       setSyncing(true);
+      // dispatch(showLoader());
       await getApiWithOutQuery({ url: API_PLAID_ACCOUNTS });
       await loadAccounts();
     } finally {
       setSyncing(false);
-     
+      // dispatch(hideLoader());
     }
   };
 
   const handleConnectBank = async () => {
     try {
- 
+      //  dispatch(showLoader());
       const res = await apiPost({
         url: API_PLAID_CREATE_LINK_TOKEN,
         values: {},
@@ -72,7 +81,7 @@ export default function AccountsPage() {
       setPlaidToken(token);
       setOpenPlaid(true);
     } finally {
-      setLoading(false);
+      // dispatch(hideLoader());
     }
   };
 
@@ -81,17 +90,19 @@ export default function AccountsPage() {
       token: plaidToken,
       product: ["auth", "transactions"],
       onSuccess: async (public_token: string) => {
-        await apiPost({
-          url: API_PLAID_EXCHANGE_TOKEN,
-          values: { public_token },
-        });
+        try {
+          // dispatch(showLoader());
 
-          await getApiWithOutQuery({
-              url: API_PLAID_ACCOUNTS,
-            });
+          await apiPost({
+            url: API_PLAID_EXCHANGE_TOKEN,
+            values: { public_token },
+          });
 
-        await loadAccounts();
-        setOpenPlaid(false);
+          await loadAccounts();
+          setOpenPlaid(false);
+        } finally {
+          // dispatch(hideLoader());
+        }
       },
       onExit: () => setOpenPlaid(false),
     }),

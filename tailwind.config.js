@@ -1,16 +1,28 @@
 module.exports = {
-    theme: {
-      extend: {
-        keyframes: {
-          rotateOnce: {
-            '0%': { transform: 'rotate(0deg)' },
-            '100%': { transform: 'rotate(9.33171deg)' },
+  theme: {
+    extend: {
+      keyframes: {
+        logoZoomIn: {
+          "0%": {
+            transform: "scale(0.2)",
+            opacity: "0",
+          },
+          "60%": {
+            transform: "scale(1.15)",
+            opacity: "1",
+          },
+          "100%": {
+            transform: "scale(1)",
+            opacity: "1",
           },
         },
-        animation: {
-          rotateOnce: 'rotateOnce 0.5s ease-in-out forwards',
-        },
+      },
+      animation: {
+        logoZoomIn: "logoZoomIn 1.1s cubic-bezier(0.22, 1, 0.36, 1) forwards",
       },
     },
-  };
+  },
+};
+
+
   

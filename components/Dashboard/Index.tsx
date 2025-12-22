@@ -1,7 +1,8 @@
 "use client";
 import { useRouter } from "next/navigation";
-
-import React, { useState } from "react";
+import { useDispatch } from "react-redux";
+import { showLoader, hideLoader } from "@/redux/loaderSlice";
+import React, { useEffect, useState } from "react";
 import AnimateSection from "../AnimateSection";
 import Section from "../Section";
 import { Button } from "../ui/Button";
@@ -33,6 +34,7 @@ const BADGES = [
 ];
 
 const Dashboard = () => {
+  const dispatch = useDispatch();
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(true);
   const [question, setQuestion] = useState("");
@@ -43,6 +45,15 @@ const Dashboard = () => {
     if (!question.trim()) return;
     console.log("Ask AI:", question);
   };
+   
+  useEffect(() => {
+  dispatch(showLoader());
+  const timer = setTimeout(() => {
+    dispatch(hideLoader());
+  }, 1000); 
+
+  return () => clearTimeout(timer);
+}, [dispatch]);
 
  const actions = [
   {
@@ -60,11 +71,15 @@ const Dashboard = () => {
     icon: Store,
     label: "Find Merchants",
     bg: "from-purple-400 to-pink-400 hover:from-purple-500 hover:to-pink-500",
+     onClick: () => router.push("/merchants"),
   },
   {
     icon: TrendingUp,
     label: "View Portfolio",
     bg: "from-amber-400 to-orange-400 hover:from-amber-500 hover:to-orange-500",
+   
+     onClick: () => router.push("/portfolio"),
+
   },
 ];
 

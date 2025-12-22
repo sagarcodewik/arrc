@@ -3,69 +3,97 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 
-const SYMBOL_MAP: Record<string, string> = {
-  "United Airlines": "UAL",
-  // "INTRST PYMNT": "INTU",
-};
-
 const API_KEY = process.env.NEXT_PUBLIC_FINNHUB_KEY!;
 
-export function useLivePrices(data: any[]) {
-  const [prices, setPrices] = useState<Record<string, number>>({});
+const SYMBOL_MAP: Record<string, string> = {
+  "United Airlines": "UAL",
+  Apple: "AAPL",
+  Amazon: "AMZN",
+  Microsoft: "MSFT",
+};
+
+export type MarketData = {
+  price: number;
+  change: number;
+  changePercent: number;
+  isDelayed: boolean;
+};
+
+
+export function useLivePrices(data: any[], refreshKey = 0) {
+  const [prices, setPrices] = useState<Record<string, MarketData>>({});
 
   useEffect(() => {
-    if (!data.length) return;
+    if (!data || data.length === 0) return;
 
     const fetchPrices = async () => {
       try {
-        const result: Record<string, number> = {};
+        const result: Record<string, MarketData> = {};
+
         await Promise.all(
           data.map(async (item) => {
-            const symbol = SYMBOL_MAP[item.assetName];
+            const symbol =
+              item.stockSymbol || SYMBOL_MAP[item.assetName];
+
             if (!symbol) return;
 
             const res = await axios.get(
-              `https://finnhub.io/api/v1/quote?symbol=${symbol}&token=${API_KEY}`
+              "https://finnhub.io/api/v1/quote",
+              {
+                params: {
+                  symbol,
+                  token: API_KEY,
+                },
+              }
             );
 
-            const json = res.data;
-            if (json?.c) {
-              result[item._id] = json.c;
+            const q = res.data;
+
+            if (q?.c !== undefined) {
+              result[item._id] = {
+                price: q.c,
+                change: q.d,
+                changePercent: q.dp,
+                isDelayed: true,
+              };
             }
           })
         );
 
         setPrices(result);
-      } catch (e) {
-        console.error("Live price error", e);
+      } catch (err) {
+        console.error("Live price error:", err);
       }
     };
 
     fetchPrices();
-    const i = setInterval(fetchPrices, 30000);
-    return () => clearInterval(i);
-  }, [data]);
+
+    const interval = setInterval(fetchPrices, 30000);
+    return () => clearInterval(interval);
+
+  }, [data, refreshKey]);
 
   return data.map((item) => {
-    const livePrice = prices[item._id];
+    const market = prices[item._id];
 
-    if (!livePrice) {
+    if (!market) {
       return {
         ...item,
-        currentValue: item.investedAmount,
+        market: null,
+        currentValue: item.investedAmount ?? 0,
         profitLoss: 0,
       };
     }
 
-    const qty = 1;
-    const currentValue = livePrice * qty;
-    const profitLoss = currentValue - item.investedAmount;
+    const qty = item.quantity ?? 1;
+    const invested = item.investedAmount ?? 0;
+    const currentValue = market.price * qty;
 
     return {
       ...item,
-      livePrice,
+      market,
       currentValue,
-      profitLoss,
+      profitLoss: currentValue - invested,
     };
   });
 }

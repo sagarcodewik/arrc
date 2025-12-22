@@ -1,11 +1,10 @@
 "use client";
+
 import React from "react";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
-import { store } from "./store";
-import { persistStore } from "redux-persist";
-
-const persistor = persistStore(store);
+import { store, persistor } from "./store";
+import LogoLoader from "@/components/LogoLoader";
 
 export default function ReduxProvider({
   children,
@@ -14,7 +13,9 @@ export default function ReduxProvider({
 }) {
   return (
     <Provider store={store}>
-      <PersistGate loading={null} persistor={persistor}>
+      <LogoLoader />
+
+      <PersistGate persistor={persistor} loading={null}>
         {children}
       </PersistGate>
     </Provider>

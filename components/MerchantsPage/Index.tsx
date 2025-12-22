@@ -1,83 +1,114 @@
 "use client";
+
 import { useEffect, useState } from "react";
 import AnimateSection from "../AnimateSection";
 import Section from "../Section";
 import { Button } from "../ui/Button";
-import Modal from "../ui/Modal";
-import {
-  CircleCheckBig,
-  Filter,
-  Plus,
-  RefreshCw,
-  Sparkles,
-  Trash2,
-  Zap,
-} from "lucide-react";
-import { FaCircleNotch } from "react-icons/fa";
+import { ChevronDown, ChevronUp, Filter, LucideBuilding, RefreshCw } from "lucide-react";
 import { IoSearchOutline } from "react-icons/io5";
 import Input from "../ui/Input";
 import { HiArrowTrendingDown, HiArrowTrendingUp } from "react-icons/hi2";
-import { LuBuilding } from "react-icons/lu";
+import { Store } from "lucide-react";
+
 import {
   API_GET_ALL_CATEGORY,
   API_GET_CATEGORY_BY_ID,
 } from "@/utils/api/APIConstant";
 import { apiPost, getApiWithOutQuery } from "@/utils/endpoints/common";
+import { useLivePrices } from "../useLivePrices";
+
+import { useDispatch } from "react-redux";
+import { showLoader, hideLoader } from "@/redux/loaderSlice";
+
 
 export type Categories = {
   _id: string;
   name: string;
   icon?: string;
   isActive: boolean;
-  createdAt?: string;
 };
+
+
+const TIER_CONFIG: Record<
+  string,
+  {
+    label: string;
+    icon: string;
+    border: string;
+    bg: string;
+    text: string;
+  }
+> = {
+  bronze: {
+    label: "Bronze",
+    icon: "🥉",
+    border: "border-orange-400",
+    bg: "bg-orange-50",
+    text: "text-orange-600",
+  },
+  silver: {
+    label: "Silver",
+    icon: "🥈",
+    border: "border-gray-300",
+    bg: "bg-gray-50",
+    text: "text-gray-500",
+  },
+  gold: {
+    label: "Gold",
+    icon: "🥇",
+    border: "border-yellow-400",
+    bg: "bg-yellow-50",
+    text: "text-yellow-600",
+  },
+  platinum: {
+    label: "Platinum",
+    icon: "💎",
+    border: "border-slate-300",
+    bg: "bg-slate-50",
+    text: "text-slate-400",
+  },
+};
+
+
 const MerchantsPage = () => {
-  const [active, setActive] = useState(false);
+  const dispatch = useDispatch();
+
   const [merchants, setMerchants] = useState<any[]>([]);
-  const [openAccountModal, setOpenAccountModal] = useState(false);
-  const [showFirst, setShowFirst] = useState(true);
-  const [completed, setCompleted] = useState(false);
   const [categories, setCategories] = useState<Categories[]>([]);
-
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [search, setSearch] = useState("");
+  const [openTierId, setOpenTierId] = useState<string | null>(null);
+  const [refreshKey, setRefreshKey] = useState(0);
+  const [refreshing, setRefreshing] = useState(false);
 
-  const [loading, setLoading] = useState(true);
-  useEffect(() => {
-    if (openAccountModal) {
-      setShowFirst(true);
-      setCompleted(false);
-    }
-  }, [openAccountModal]);
+  const merchantsWithPrices = useLivePrices(merchants, refreshKey);
 
-  useEffect(() => {
-    if (!showFirst) {
-      const timer = setTimeout(() => setCompleted(true), 4000);
-      const closeTimer = setTimeout(() => setOpenAccountModal(false), 8000);
-      return () => {
-        clearTimeout(timer);
-        clearTimeout(closeTimer);
-      };
-    }
-  }, [showFirst]);
 
   useEffect(() => {
-    loadCategories();
+    initPage();
   }, []);
-  const loadCategories = async () => {
-    try {
-      setLoading(true);
 
-      const res = await getApiWithOutQuery({
-        url: API_GET_ALL_CATEGORY,
-      });
-      const list = Array.isArray(res) ? res : [];
-      setCategories(list);
-    } catch (error) {
+  const initPage = async () => {
+    try {
+      dispatch(showLoader());
+
+      const [categoryRes, merchantRes] = await Promise.all([
+        getApiWithOutQuery({ url: API_GET_ALL_CATEGORY }),
+        apiPost({ url: API_GET_CATEGORY_BY_ID, values: {} }),
+      ]);
+
+      setCategories(Array.isArray(categoryRes) ? categoryRes : []);
+      setMerchants(merchantRes?.data || []);
+      setRefreshKey((p) => p + 1);
+    } catch {
       setCategories([]);
+      setMerchants([]);
     } finally {
-      setLoading(false);
+      dispatch(hideLoader());
     }
   };
+
+
   const handleCategoryClick = async (categoryId?: string) => {
     try {
       const res = await apiPost({
@@ -86,95 +117,125 @@ const MerchantsPage = () => {
       });
 
       setMerchants(res?.data || []);
-    } catch (error) {
+      setRefreshKey((p) => p + 1);
+    } catch {
       setMerchants([]);
+    } finally {
+
     }
   };
-  const NoMerchants = () => {
-    return (
-      <div className="col-span-full flex flex-col items-center justify-center rounded-2xl border border-slate-200 bg-white py-20 text-center">
-        <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-cyan-50">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-8 w-8 text-cyan-600"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M3 7l9-4 9 4v10a2 2 0 01-2 2H5a2 2 0 01-2-2V7z"
-            />
-          </svg>
-        </div>
 
-        <h3 className="text-lg font-semibold text-slate-900">
-          No Merchants Found
-        </h3>
-        <p className="mt-1 text-sm text-slate-500">
-          Try adjusting your search or filter criteria.
-        </p>
-      </div>
+
+  const fetchMerchants = async (categoryId?: string) => {
+    try {
+      setRefreshing(true);
+      dispatch(showLoader());
+
+      const res = await apiPost({
+        url: API_GET_CATEGORY_BY_ID,
+        values: categoryId ? { categoryId } : {},
+      });
+
+      setMerchants(res?.data || []);
+      setRefreshKey((p) => p + 1);
+    } catch {
+      setMerchants([]);
+    } finally {
+      setRefreshing(false);
+      dispatch(hideLoader());
+    }
+  };
+
+
+  const filteredMerchants = merchantsWithPrices.filter((item) => {
+    if (!search.trim()) return true;
+    const q = search.toLowerCase();
+
+    return (
+      item.name?.toLowerCase().includes(q) ||
+      item.description?.toLowerCase().includes(q) ||
+      item.stockSymbol?.toLowerCase().includes(q) ||
+      item.categoryId?.slug?.toLowerCase().includes(q)
+    );
+  });
+
+
+  const hasActiveRewardTier = (tiers?: Record<string, number>) => {
+    if (!tiers) return false;
+    return Object.values(tiers).some(
+      (rate) => typeof rate === "number" && rate > 0
     );
   };
+
+  const getAvgRewardRate = (rewardRate?: number) => {
+    if (typeof rewardRate !== "number") return "0.00";
+    return rewardRate.toFixed(2);
+  };
+
+  const NoMerchants = () => (
+    <div className="col-span-full flex flex-col items-center justify-center rounded-2xl border border-slate-200 bg-white py-20 text-center">
+      <Store className="mx-auto mb-6 h-20 w-20 text-cyan-500" />
+      <h3 className="text-lg font-semibold text-slate-900">
+        No Merchants Found
+      </h3>
+      <p className="mt-1 text-sm text-slate-500">
+        Try adjusting your search or filter criteria.
+      </p>
+    </div>
+  );
+
+
   return (
     <>
       <AnimateSection>
-        <Section customClass="relative mb-6">
-          <div className="flex flex-col-reverse md:flex-row md:justify-between md:items-start gap-4 w-full">
-            <div className="flex-1">
-              <div className="text-center md:text-left">
-                <h1 className="text-slate-900 text-2xl sm:text-3xl lg:text-3xl font-semibold">
-                  Merchant Partners
-                </h1>
-                <p className="text-slate-600 text-sm sm:text-base font-medium">
-                  Shop with our partners and earn stock rewards
-                </p>
-              </div>
+        <Section customClass="mb-6">
+          <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
+            <div>
+              <h1 className="text-3xl font-semibold text-slate-900">
+                Merchant Partners
+              </h1>
+              <p className="text-slate-600">
+                Shop with our partners and earn stock rewards
+              </p>
             </div>
-            <div className="flex gap-2 items-center justify-center md:justify-end mt-4 md:mt-0 w-full md:w-auto">
-              <Button
-                variant="outline"
-                size="default"
-                rounded="lg"
-                type="button"
-                className="inline-flex items-center justify-center gap-2 whitespace-nowrap"
-              >
-                <RefreshCw size={18} className="flex-shrink-0" />{" "}
-                <span>Refresh Data</span>
-              </Button>
-            </div>
+
+            <Button
+              variant="outline"
+              disabled={refreshing}
+              onClick={() => fetchMerchants(selectedCategory ?? undefined)}
+            >
+              <RefreshCw
+                size={16}
+                className={refreshing ? "animate-spin" : ""}
+              />
+              <span className="ml-2">
+                {refreshing ? "Refreshing..." : "Refresh Data"}
+              </span>
+            </Button>
           </div>
         </Section>
       </AnimateSection>
 
       <AnimateSection>
-        <Section customClass="relative mb-6">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
-            <div className="sm:col-span-2 lg:col-span-3">
+        <Section>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="col-span-full">
               <Input
-                controlId="search"
                 placeholder="Search merchants..."
-                leftIcon={<IoSearchOutline className="h-4 w-4 lg:h-5 lg:w-5" />}
-                variant="default"
-                size="lg"
-                className="!bg-white shadow-sm"
+                leftIcon={<IoSearchOutline />}
+                value={search}
+                onChange={(e: any) => setSearch(e.target.value)}
               />
             </div>
-            <div className="sm:col-span-2 lg:col-span-3 flex flex-wrap gap-2 lg:gap-3">
-              <div className="flex items-center gap-2 w-full sm:w-auto">
-                <Filter className="w-3 h-3 lg:w-4 lg:h-4 text-slate-500" />
-                <span className="text-xs lg:text-sm font-medium text-slate-600">
-                  Filter by category:
-                </span>
-              </div>
+
+            <div className="col-span-full flex flex-wrap gap-2 items-center">
+              <Filter size={14} className="text-slate-500" />
+              <p> Filter by category: </p>
+
               <Button
-                variant={selectedCategory === null ? "cyan" : "outline"}
                 size="sm"
                 rounded="full"
-                className="!rounded-full h-auto py-2"
+                variant={selectedCategory === null ? "cyan" : "outline"}
                 onClick={() => {
                   setSelectedCategory(null);
                   handleCategoryClick();
@@ -183,79 +244,158 @@ const MerchantsPage = () => {
                 All Categories
               </Button>
 
-              {categories.length === 0 ? (
-                <span className="text-sm text-slate-400">
-                  Loading categories...
-                </span>
-              ) : (
-                categories.map((cat) => (
-                  <Button
-                    key={cat._id}
-                    variant={selectedCategory === cat._id ? "cyan" : "outline"}
-                    size="sm"
-                    rounded="full"
-                    className="!rounded-full h-auto py-2"
-                    onClick={() => {
-                      setSelectedCategory(cat._id);
-                      handleCategoryClick(cat._id);
-                    }}
-                  >
-                    {cat.name}
-                  </Button>
-                ))
-              )}
+              {categories.map((cat) => (
+                <Button
+                  key={cat._id}
+                  size="sm"
+                  rounded="full"
+                  variant={selectedCategory === cat._id ? "cyan" : "outline"}
+                  onClick={() => {
+                    setSelectedCategory(cat._id);
+                    handleCategoryClick(cat._id);
+                  }}
+                >
+                  {cat.name}
+                </Button>
+              ))}
             </div>
-            {merchants.length === 0 ? (
+
+            {filteredMerchants.length === 0 ? (
               <NoMerchants />
             ) : (
-              merchants.map((item) => (
+              filteredMerchants.map((item) => (
                 <div
                   key={item._id}
-                  className="flex flex-col h-full rounded-2xl bg-gradient-to-br from-white to-slate-50 border border-slate-200 shadow-sm hover:-translate-y-1 hover:shadow-xl transition-all duration-500"
+                  className="flex flex-col rounded-2xl border border-slate-200 bg-white p-6 shadow-sm hover:shadow-lg transition"
                 >
-                  <div className="p-6 space-y-1.5">
-                    <div className="flex justify-between items-start">
-                      <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 flex items-center justify-center rounded-lg bg-white border border-slate-200">
-                          <LuBuilding />
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="flex gap-3 items-center">
+                      <div className="w-12 h-12 flex items-center justify-center rounded-lg border bg-white overflow-hidden">
+                          {item.image_url ? (
+                            <img
+                              src={item.image_url}
+                              alt={item.name}
+                              className="w-full h-full object-contain"
+                            />
+                          ) : (
+                            <LucideBuilding className="text-slate-500" />
+                          )}
                         </div>
-                        <div>
-                          <h3 className="text-lg font-semibold text-slate-900">
-                            {item.name}
-                          </h3>
-                          <p className="text-sm font-medium text-slate-500 capitalize">
-                            {item.categoryId?.slug}
-                          </p>
-                        </div>
+                      <div>
+                        <h3 className="text-lg font-semibold text-slate-900">
+                          {item.name}
+                        </h3>
+                        <p className="text-sm text-slate-500">
+                          {item.categoryId?.slug ?? "Other"}
+                        </p>
+                      </div>
+                    </div>
+
+                    {item.isFeatured && (
+                      <span className="flex items-center gap-1 rounded-full bg-yellow-50 border border-yellow-300 px-2.5 py-1 text-xs font-medium text-yellow-700">
+                        ⭐ Featured
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-sm text-slate-600 mb-4">
+                    {item.description}
+                  </p>
+                  <div className="grid grid-cols-2 gap-4 mb-3">
+                    <div className="rounded-lg border bg-slate-100/70 p-3">
+                      <div className="text-xs text-slate-500">
+                        % Reward Rate
+                      </div>
+                      <div className="text-xl font-bold text-cyan-700">
+                        {getAvgRewardRate(item.rewardRate)}%
+                      </div>
+                    </div>
+
+                    <div className="rounded-lg border bg-slate-100/70 p-3">
+                      <div className="text-xs text-slate-500">Stock</div>
+                      <div className="text-xl font-bold text-slate-800">
+                        {item.stockSymbol ?? "N/A"}
                       </div>
                     </div>
                   </div>
-                  <div className="p-6 pt-0 flex-grow space-y-4">
-                    <p className="text-sm text-slate-600">{item.description}</p>
+                  {item.market && (
+                    <div className="flex items-center gap-2 text-sm text-slate-600 mb-4">
+                      <span className="h-1.5 w-1.5 rounded-full bg-slate-400" />
 
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="rounded-lg border border-slate-200 bg-slate-100/70 p-3">
-                        <div className="text-xs text-slate-500">
-                          % Reward Rate
-                        </div>
-                        <div className="text-xl font-bold text-cyan-700">
-                          {item.rewardRate}%
-                        </div>
-                      </div>
+                      <span>
+                        <span className="font-medium">Price:</span>{" "}
+                        <span className="font-semibold">
+                          ${item.market.price.toFixed(2)}
+                        </span>
+                      </span>
 
-                      <div className="rounded-lg border border-slate-200 bg-slate-100/70 p-3">
-                        <div className="text-xs text-slate-500">🏢 Stock</div>
-                        <div className="text-xl font-bold text-slate-800">
-                          {item.stockSymbol}
-                        </div>
-                      </div>
+                      <span
+                        className={`flex items-center gap-1 font-medium ${
+                          item.market.changePercent >= 0
+                            ? "text-emerald-600"
+                            : "text-red-500"
+                        }`}
+                      >
+                        {item.market.changePercent >= 0 ? (
+                          <HiArrowTrendingUp className="h-4 w-4" />
+                        ) : (
+                          <HiArrowTrendingDown className="h-4 w-4" />
+                        )}
+                        {Math.abs(item.market.changePercent).toFixed(2)}%
+                      </span>
+
+                      <span className="text-xs text-slate-400">(Delayed)</span>
                     </div>
-                  </div>
-                  <div className="p-6 pt-0">
-                    <Button variant="outline" rounded="lg" className="w-full">
-                      👑 Reward Tiers
-                    </Button>
-                  </div>
+                  )}
+                  <Button
+                    variant="outline"
+                    className="mt-auto flex items-center justify-center gap-2"
+                    onClick={() =>
+                      setOpenTierId(openTierId === item._id ? null : item._id)
+                    }
+                  >
+                    <span className="flex items-center gap-2">
+                      <span className="text-yellow-500">👑</span>
+                      Reward Tiers
+                    </span>
+
+                    {openTierId === item._id ? (
+                      <ChevronUp className="h-4 w-4" />
+                    ) : (
+                      <ChevronDown className="h-4 w-4" />
+                    )}
+                  </Button>
+
+                  {openTierId === item._id && (
+                    <div className="mt-4 space-y-3">
+                      {hasActiveRewardTier(item.rewardTier) ? (
+                        Object.entries(item.rewardTier as Record<string, number>).map(([key, rate]) => {
+                          const tier = TIER_CONFIG[key];
+                          if (!tier) return null;
+
+                          return (
+                            <div
+                              key={key}
+                              className={`flex justify-between rounded-xl border px-4 py-3 ${tier.border} ${tier.bg}`}
+                            >
+                              <div className="flex items-center gap-3">
+                                <span>{tier.icon}</span>
+                                <span className={tier.text}>
+                                  {tier.label}
+                                </span>
+                              </div>
+                              <span className={`${tier.text} font-bold`}>
+                                {rate}%
+                              </span>
+                            </div>
+                          );
+                        })
+                      ) : (
+                        <p className="text-center text-sm text-slate-500">
+                          No reward tiers configured
+                        </p>
+                      )}
+                    </div>
+                  )}
                 </div>
               ))
             )}

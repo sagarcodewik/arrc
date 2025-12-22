@@ -43,6 +43,7 @@ const persistConfig = {
   key: "Arrc",
   storage,
   whitelist: ["auth"],
+  blacklist: ["loader"], 
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

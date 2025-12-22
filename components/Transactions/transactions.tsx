@@ -20,6 +20,9 @@ import {
   exportSpendingPDF,
   exportSpendingExcel,
 } from "../Transactions/exportReports";
+import { useDispatch } from "react-redux";
+import { showLoader, hideLoader } from "@/redux/loaderSlice";
+import RulesTab from "./RulesTab";
 
 type Transaction = {
   _id: string;
@@ -38,8 +41,8 @@ const rangeLabelMap: Record<DateRange, string> = {
   "365": "Last year",
 };
 export default function TransactionsPage() {
+  const dispatch = useDispatch();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [chartType, setChartType] = useState<"pie" | "bar">("pie");
@@ -49,8 +52,8 @@ export default function TransactionsPage() {
   const [exportOpen, setExportOpen] = useState(false);
 
   const [activeTab, setActiveTab] = useState<
-    "transactions" | "reports" | "categories"
-  >("reports");
+    "transactions" | "reports" | "categories" | "rules"
+  >("transactions");
 
   useEffect(() => {
     loadTransactions();
@@ -58,8 +61,7 @@ export default function TransactionsPage() {
 
   const loadTransactions = async () => {
     try {
-      setLoading(true);
-
+     dispatch(showLoader());
       await getApiWithOutQuery({
         url: API_PLAID_TRANSACTIONS_SYNC,
       });
@@ -73,7 +75,8 @@ export default function TransactionsPage() {
     } catch (e) {
       setTransactions([]);
     } finally {
-      setLoading(false);
+          dispatch(hideLoader());
+
     }
   };
   const isWithinRange = (dateStr: string) => {
@@ -114,31 +117,7 @@ export default function TransactionsPage() {
     });
   }, [transactions, search, selectedCategory]);
 
-  // const reportData = useMemo(() => {
-  //   const spendingTxns = transactions.filter((t) => t.amount < 0);
 
-  //   let totalSpending = 0;
-  //   const categoryMap: Record<string, number> = {};
-
-  //   spendingTxns.forEach((txn) => {
-  //     const amount = Math.abs(txn.amount);
-  //     totalSpending += amount;
-
-  //     const category = txn.merchantName || txn.name || "Uncategorized";
-  //     categoryMap[category] = (categoryMap[category] || 0) + amount;
-  //   });
-
-  //   const categories = Object.keys(categoryMap);
-
-  //   return {
-  //     totalSpending,
-  //     categoriesCount: categories.length,
-  //     transactionsCount: spendingTxns.length,
-  //     avgTransaction:
-  //       spendingTxns.length > 0 ? totalSpending / spendingTxns.length : 0,
-  //     categoryMap,
-  //   };
-  // }, [transactions]);
   const reportData = useMemo(() => {
     const spendingTxns = transactions
       .filter((t) => t.amount < 0)
@@ -197,7 +176,12 @@ export default function TransactionsPage() {
           label="Categories"
           onClick={() => setActiveTab("categories")}
         />
-        <TabButton icon={<SlidersHorizontal size={16} />} label="Rules" />
+      <TabButton
+        active={activeTab === "rules"}
+        icon={<SlidersHorizontal size={16} />}
+        label="Rules"
+        onClick={() => setActiveTab("rules")}
+      />
       </div>
       {activeTab === "transactions" && (
         <>
@@ -215,9 +199,9 @@ export default function TransactionsPage() {
             />
           </div>
 
-          {!loading && filteredTransactions.length === 0 && <EmptyState />}
+          {filteredTransactions.length === 0 && <EmptyState />}
 
-          {!loading && filteredTransactions.length > 0 && (
+          {filteredTransactions.length > 0 && (
             <div className="rounded-xl border bg-white">
               {filteredTransactions.map((txn) => (
                 <div
@@ -257,7 +241,6 @@ export default function TransactionsPage() {
             <h3 className="font-semibold text-lg">Spending by Category</h3>
 
             <div className="flex items-center gap-2">
-              {/* DATE RANGE DROPDOWN */}
               <div className="relative">
                 <button
                   onClick={() => setRangeOpen((v) => !v)}
@@ -303,8 +286,6 @@ export default function TransactionsPage() {
                   </div>
                 )}
               </div>
-
-              {/* CHART TOGGLE */}
               <button
                 onClick={() => setChartType("pie")}
                 className={`rounded-md px-3 py-1 text-sm ${
@@ -322,7 +303,6 @@ export default function TransactionsPage() {
               >
                 Bar
               </button>
-              {/* EXPORT */}
               <div className="relative">
                 <button
                   onClick={() => setExportOpen((v) => !v)}
@@ -358,8 +338,6 @@ export default function TransactionsPage() {
               </div>
             </div>
           </div>
-
-          {/* BODY */}
           {reportData.transactionsCount === 0 ? (
             <div className="py-20 text-center text-gray-500">
               No transaction data available for this period
@@ -424,6 +402,8 @@ export default function TransactionsPage() {
           </div>
         </div>
       )}
+      {activeTab === "rules" && <RulesTab />}
+
     </div>
   );
 }

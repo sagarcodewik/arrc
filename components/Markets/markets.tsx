@@ -6,15 +6,19 @@ import { API_PORTFOLIO_GET } from "@/utils/api/APIConstant";
 import { getApiWithOutQuery } from "@/utils/endpoints/common";
 import { useEffect, useState } from "react";
 import { useLivePrices } from "../useLivePrices";
+import { useDispatch } from "react-redux";
+import { showLoader, hideLoader } from "@/redux/loaderSlice";
 
 export default function MarketsPage() {
+  const dispatch = useDispatch();
   const { time, isOpen } = useMarketStatus();
 
   const [data, setData] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchPortfolio = async () => {
+      dispatch(showLoader());
+
       try {
         const res = await getApiWithOutQuery({
           url: API_PORTFOLIO_GET,
@@ -23,20 +27,28 @@ export default function MarketsPage() {
         if (res?.success) {
           setData(res.data || []);
         }
+      } catch (err) {
+        console.error("Portfolio fetch failed", err);
       } finally {
-        setLoading(false);
+        dispatch(hideLoader());
       }
     };
 
     fetchPortfolio();
-  }, []);
+  }, [dispatch]);
 
+  // ❌ NO LOADER HERE
   const assets = useLivePrices(data).filter(
     (item) =>
-      item.assetName && item.assetName !== "Unknown" && item.investedAmount > 0
+      item.assetName &&
+      item.assetName !== "Unknown" &&
+      item.investedAmount > 0
   );
 
-  const totalInvested = assets.reduce((s, a) => s + (a.investedAmount || 0), 0);
+  const totalInvested = assets.reduce(
+    (s, a) => s + (a.investedAmount || 0),
+    0
+  );
 
   const totalValue = assets.reduce(
     (s, a) => s + (a.currentValue || a.investedAmount || 0),
@@ -50,9 +62,10 @@ export default function MarketsPage() {
 
   return (
     <div className="min-h-screen bg-[#0A1220] text-white px-6 py-8 space-y-8">
+      {/* MARKET STATUS */}
       <div className="space-y-4">
         <div className="flex justify-between bg-[#101A2B] p-3 rounded-xl text-sm">
-          <div className="flex gap-2">
+          <div className="flex gap-2 items-center">
             <span
               className={`h-2 w-2 rounded-full ${
                 isOpen ? "bg-green-500" : "bg-red-500"
@@ -63,13 +76,17 @@ export default function MarketsPage() {
           </div>
           <div className="text-yellow-400">Data delayed ~15 minutes</div>
         </div>
+
         <TradingViewTicker />
       </div>
 
+      {/* STATS */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-[#101A2B] p-6 rounded-xl">
           <div className="text-gray-400 text-sm">Total Portfolio Value</div>
-          <div className="text-3xl font-bold">${totalValue.toFixed(2)}</div>
+          <div className="text-3xl font-bold">
+            ${totalValue.toFixed(2)}
+          </div>
         </div>
 
         <div className="bg-[#101A2B] p-6 rounded-xl">
@@ -79,7 +96,8 @@ export default function MarketsPage() {
               profitLoss >= 0 ? "text-green-400" : "text-red-400"
             }`}
           >
-            {profitLoss >= 0 ? "+" : "-"}${Math.abs(profitLoss).toFixed(2)} (
+            {profitLoss >= 0 ? "+" : "-"}$
+            {Math.abs(profitLoss).toFixed(2)} (
             {profitLossPercent.toFixed(2)}%)
           </div>
         </div>
@@ -89,8 +107,12 @@ export default function MarketsPage() {
           <div className="text-3xl font-bold">{assets.length}</div>
         </div>
       </div>
+
+      {/* HOLDINGS */}
       <div className="bg-[#101A2B] p-6 rounded-xl">
-        <h3 className="text-xl font-semibold mb-4">📈 Your Stock Holdings</h3>
+        <h3 className="text-xl font-semibold mb-4">
+          📈 Your Stock Holdings
+        </h3>
 
         {assets.map((item) => (
           <div
@@ -103,13 +125,16 @@ export default function MarketsPage() {
                 Invested: ${item.investedAmount.toFixed(2)}
               </div>
             </div>
+
             <div className="text-right">
               <div className="font-semibold">
                 ${item.currentValue.toFixed(2)}
               </div>
               <div
                 className={`text-sm ${
-                  item.profitLoss >= 0 ? "text-green-400" : "text-red-400"
+                  item.profitLoss >= 0
+                    ? "text-green-400"
+                    : "text-red-400"
                 }`}
               >
                 {item.profitLoss >= 0 ? "+" : "-"}$

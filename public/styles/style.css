@@ -32,3 +32,36 @@ hr {margin: 0; border: 0; height: 1px; background-color: currentColor; opacity: 
 
 /* ================================ COMPONENT HELPERS ================================ */
 
+
+/* ================================ LOGO LOADER by amarjeet ================================ */
+
+@keyframes logoZoomPulse {
+  0% {
+    transform: scale(0.85);
+    opacity: 0.6;
+  }
+  50% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(0.85);
+    opacity: 0.6;
+  }
+}
+
+.logo-loader {
+  animation: logoZoomPulse 1.6s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+
+/* Loading text fade */
+@keyframes fadeText {
+  0% { opacity: 0.3; }
+  50% { opacity: 0.8; }
+  100% { opacity: 0.3; }
+}
+
+.animate-fade {
+  animation: fadeText 1.4s ease-in-out infinite;
+}

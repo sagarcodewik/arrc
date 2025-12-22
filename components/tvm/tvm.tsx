@@ -1,10 +1,16 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useDispatch } from "react-redux";
 
 import { API_TVM_CALCULATE } from "@/utils/api/APIConstant";
 import { apiPost } from "@/utils/endpoints/common";
+import { showLoader, hideLoader } from "@/redux/loaderSlice";
+
 export default function TVMCalculatorPage() {
+  const dispatch = useDispatch();
+  const firstLoad = useRef(true); 
+
   const [form, setForm] = useState({
     initialInvestment: 10000,
     contributionAmount: 100,
@@ -15,26 +21,33 @@ export default function TVMCalculatorPage() {
   });
 
   const [result, setResult] = useState<any>(null);
-  const [loading, setLoading] = useState(false);
 
-  const calculateTVM = async () => {
-    setLoading(true);
+  const calculateTVM = async (withLoader = false) => {
+    if (withLoader) dispatch(showLoader());
+
     try {
       const res = await apiPost({
         url: API_TVM_CALCULATE,
-        values:form
+        values: form,
       });
-     console.log("res-------------------------------->",res)
+
       setResult(res.data);
     } catch (error) {
       console.error("TVM calculation failed", error);
     } finally {
-      setLoading(false);
+      if (withLoader) dispatch(hideLoader());
     }
   };
 
   useEffect(() => {
-    calculateTVM();
+    calculateTVM(true);
+    firstLoad.current = false;
+  }, []);
+
+  useEffect(() => {
+    if (!firstLoad.current) {
+      calculateTVM(false);
+    }
   }, [form]);
 
   const onChange = (e: any) => {
@@ -110,7 +123,7 @@ export default function TVMCalculatorPage() {
         <div className="bg-white rounded-xl shadow p-6 space-y-4">
           <h2 className="text-xl font-bold">📈 Your Combined Growth</h2>
 
-          {loading || !result ? (
+          {!result ? (
             <p className="text-gray-500">Calculating...</p>
           ) : (
             <>
@@ -120,7 +133,10 @@ export default function TVMCalculatorPage() {
               <div className="bg-slate-50 rounded-lg p-4 text-sm space-y-1">
                 <p>Invested Principal: ${result.investedPrincipal}</p>
                 <p>Interest from Lump Sum: ${result.interestFromLump}</p>
-                <p>Interest from Contributions: ${result.interestFromContrib}</p>
+                <p>
+                  Interest from Contributions: $
+                  {result.interestFromContrib}
+                </p>
               </div>
             </>
           )}
@@ -138,6 +154,7 @@ export default function TVMCalculatorPage() {
     </div>
   );
 }
+
 
 function Input({ label, children }: any) {
   return (
@@ -167,7 +184,9 @@ function Stat({ title, value }: any) {
   return (
     <div className="bg-slate-50 rounded-lg p-4">
       <p className="text-sm text-gray-500">{title}</p>
-      <p className="text-2xl font-bold">${value.toLocaleString()}</p>
+      <p className="text-2xl font-bold">
+        ${Number(value).toLocaleString()}
+      </p>
     </div>
   );
 }
