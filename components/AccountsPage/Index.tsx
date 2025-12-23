@@ -2,8 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { usePlaidLink } from "react-plaid-link";
-import { Plus, Zap, Loader2 } from "lucide-react";
-
+import { Plus, Zap, Loader2, CreditCard } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import AccountCard from "./AccountCard";
 import { showLoader, hideLoader } from "@/redux/loaderSlice";
@@ -35,22 +34,22 @@ export default function AccountsPage() {
     });
   }, []);
 
-const loadAccounts = async () => {
-  try {
-    setLoading(true);
+  const loadAccounts = async () => {
+    try {
+      setLoading(true);
 
-    const res = await getApiWithOutQuery({
-      url: API_PLAID_ACCOUNTS,
-    });
+      const res = await getApiWithOutQuery({
+        url: API_PLAID_ACCOUNTS,
+      });
 
-    setAccounts(res?.data || []);
-  } catch (error) {
-    console.error("Failed to load accounts", error);
-    setAccounts([]);
-  } finally {
-    setLoading(false);
-  }
-};
+      setAccounts(res?.data || []);
+    } catch (error) {
+      console.error("Failed to load accounts", error);
+      setAccounts([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleSync = async () => {
     try {
@@ -137,14 +136,17 @@ const loadAccounts = async () => {
             Manage your ARRC investment accounts
           </p>
         </div>
-
-        <div className="flex gap-3">
+        <div className="flex items-center gap-3">
           <Button
             variant="outline"
             onClick={handleSync}
             disabled={syncing}
-            className="flex items-center gap-2"
-          >
+            className="
+                    flex items-center gap-2
+                    h-10 px-4
+                    rounded-lg
+                  "
+                    >
             {syncing ? (
               <Loader2 size={16} className="animate-spin" />
             ) : (
@@ -156,8 +158,16 @@ const loadAccounts = async () => {
           <Button
             onClick={handleConnectBank}
             disabled={loading}
-            className="flex items-center gap-2"
-          >
+            className="
+                      flex items-center gap-2
+                      h-10 px-5
+                      rounded-lg font-medium text-white
+                      bg-gradient-to-r from-cyan-500 to-sky-500
+                      hover:from-cyan-600 hover:to-sky-600
+                      shadow-lg shadow-cyan-500/30
+                      transition-all duration-300
+                    "
+                          >
             <Plus size={16} />
             Connect Account
           </Button>
@@ -169,10 +179,46 @@ const loadAccounts = async () => {
           <Loader2 size={32} className="animate-spin text-gray-400" />
         </div>
       )}
-
+      {/* 
       {!loading && accounts.length === 0 && (
         <div className="text-sm text-muted-foreground">
           No bank accounts connected
+        </div>
+      )} */}
+      {!loading && accounts.length === 0 && (
+        <div className="w-full rounded-2xl border border-slate-200 bg-white shadow-sm">
+          <div className="flex flex-col items-center justify-center text-center px-6 py-20">
+            <div className="mb-6">
+              <div className="h-14 w-14 rounded-xl bg-cyan-100 flex items-center justify-center">
+                <CreditCard className="h-7 w-7 text-cyan-600" />
+              </div>
+            </div>
+
+            <h2 className="text-xl font-semibold text-slate-900">
+              Connect an Account to Join ARRC
+            </h2>
+
+            <p className="mt-2 text-sm text-slate-500 max-w-md">
+              Link your investment accounts to start earning exclusive rewards
+              with every purchase.
+            </p>
+
+            <Button
+              onClick={handleConnectBank}
+              disabled={loading}
+              className="
+                  mt-6 flex items-center gap-2 px-6 py-2.5
+                  rounded-lg font-medium text-white
+                  bg-gradient-to-r from-cyan-500 to-sky-500
+                  hover:from-cyan-600 hover:to-sky-600
+                  shadow-lg shadow-cyan-500/30
+                  transition-all duration-300
+                "
+                          >
+              <Plus size={16} />
+              Connect with Plaid
+            </Button>
+          </div>
         </div>
       )}
 

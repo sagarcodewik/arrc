@@ -2,22 +2,46 @@
 import { useRouter } from "next/navigation";
 import { useDispatch } from "react-redux";
 import { showLoader, hideLoader } from "@/redux/loaderSlice";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import AnimateSection from "../AnimateSection";
 import Section from "../Section";
 import { Button } from "../ui/Button";
 import { FiActivity, FiBarChart2 } from "react-icons/fi";
-import { Wallet, DollarSign, TrendingUp, CreditCard, Sparkles, ChevronUp, ChevronDown, Send, QrCode, Copy, Download, Trophy, Star, Gift, Rocket, Target, Zap, Store,} from "lucide-react";
+import {
+  Wallet,
+  DollarSign,
+  TrendingUp,
+  CreditCard,
+  Sparkles,
+  ChevronUp,
+  ChevronDown,
+  Send,
+  QrCode,
+  Copy,
+  Download,
+  Trophy,
+  Star,
+  Gift,
+  Rocket,
+  Target,
+  Zap,
+  Store,
+} from "lucide-react";
 import MemberCardWidget from "@/components/MemberCardWidget";
+import { apiPost, getApiWithOutQuery } from "@/utils/endpoints/common";
+import {
+  API_PLAID_ACCOUNTS,
+  API_GET_FINANCIAL_ADVISOR,
+} from "@/utils/api/APIConstant";
+import FinancialAdvisorAnswer from "@/components/FinancialAdvisorAnswer";
 
-type StatItem = { title: string; value: string | number; delta: string; subLabel: string; icon: React.ReactNode;};
-
-const stats: StatItem[] = [
-  { title: "Portfolio Value", value: "$0.00", subLabel: "Total invested", delta: "+12.5%", icon: <Wallet size={18} className="text-white" />,},
-  { title: "Total Rewards", value: "$0.00", subLabel: "Lifetime earned", delta: "+$24.50", icon: <DollarSign size={18} className="text-white" />,},
-  { title: "Pending Rewards", value: "$0.00", subLabel: "Next investment", delta: "+3.2%", icon: <TrendingUp size={18} className="text-white" />,},
-  { title: "Linked Accounts", value: 3, subLabel: "Connected", delta: "+1", icon: <CreditCard size={18} className="text-white" />,},
-];
+type StatItem = {
+  title: string;
+  value: string | number;
+  delta: string;
+  subLabel: string;
+  icon: React.ReactNode;
+};
 
 const quickQuestions = [
   "How can I reach my investment goal faster?",
@@ -27,10 +51,22 @@ const quickQuestions = [
 ];
 
 const BADGES = [
-  { icon: Star, title: "First Win 🎉", description: "Made your first purchase with rewards",},
-  { icon: Gift, title: "Coffee Fund ☕", description: "$50 portfolio value",},
-  { icon: Rocket, title: "Weekend Trip ✈️", description: "$250 portfolio value",},
-  { icon: Target, title: "Smart Spender 🛍️", description: "25 rewarded purchases",},
+  {
+    icon: Star,
+    title: "First Win 🎉",
+    description: "Made your first purchase with rewards",
+  },
+  { icon: Gift, title: "Coffee Fund ☕", description: "$50 portfolio value" },
+  {
+    icon: Rocket,
+    title: "Weekend Trip ✈️",
+    description: "$250 portfolio value",
+  },
+  {
+    icon: Target,
+    title: "Smart Spender 🛍️",
+    description: "25 rewarded purchases",
+  },
 ];
 
 const Dashboard = () => {
@@ -38,51 +74,131 @@ const Dashboard = () => {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(true);
   const [question, setQuestion] = useState("");
-  const handleQuickClick = (q: string) => {setQuestion(q); setIsOpen(true);};
+  const [answer, setAnswer] = useState<string>("");
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiError, setAiError] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleQuickClick = (q: string) => {
+    setQuestion(q);
+    setIsOpen(true);
+  };
+  const [accounts, setAccounts] = useState<any[]>([]);
+
+  useEffect(() => {
+    loadAccounts();
+  }, []);
+  const loadAccounts = async () => {
+    try {
+      const res = await getApiWithOutQuery({
+        url: API_PLAID_ACCOUNTS,
+      });
+
+      setAccounts(res?.data || []);
+    } catch (error) {
+      console.error("Failed to load accounts", error);
+      setAccounts([]);
+    } finally {
+    }
+  };
+  const accountCount = useMemo(
+    () => accounts.filter((a) => a.account_id).length,
+    [accounts]
+  );
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!question.trim()) return;
-    console.log("Ask AI:", question);
+
+    try {
+      setAiLoading(true);
+      setAiError(null);
+      setAnswer("");
+
+      const res = await apiPost({
+        url: API_GET_FINANCIAL_ADVISOR,
+        values: {
+          question,
+        },
+      });
+      if (!res?.success) {
+        throw new Error(res?.message || "AI failed");
+      }
+
+      setAnswer(res.answer);
+    } catch (err) {
+      console.error(err);
+      setAiError("Unable to get AI insights right now.");
+    } finally {
+      setAiLoading(false);
+    }
   };
-   
+
   useEffect(() => {
-  dispatch(showLoader());
-  const timer = setTimeout(() => {
-    dispatch(hideLoader());
-  }, 1000); 
+    dispatch(showLoader());
+    const timer = setTimeout(() => {
+      dispatch(hideLoader());
+    }, 1000);
 
-  return () => clearTimeout(timer);
-}, [dispatch]);
+    return () => clearTimeout(timer);
+  }, [dispatch]);
 
- const actions = [
-  {
-    icon: QrCode,
-    label: "My QR Code",
-    bg: "from-emerald-400 to-teal-400 hover:from-emerald-500 hover:to-teal-500",
-    onClick: () => router.push("/member-card"),
-  },
-  {
-    icon: CreditCard,
-    label: "Link Account",
-    bg: "from-blue-400 to-indigo-400 hover:from-blue-500 hover:to-indigo-500",
-  },
-  {
-    icon: Store,
-    label: "Find Merchants",
-    bg: "from-purple-400 to-pink-400 hover:from-purple-500 hover:to-pink-500",
-     onClick: () => router.push("/merchants"),
-  },
-  {
-    icon: TrendingUp,
-    label: "View Portfolio",
-    bg: "from-amber-400 to-orange-400 hover:from-amber-500 hover:to-orange-500",
-   
-     onClick: () => router.push("/portfolio"),
+  const actions = [
+    {
+      icon: QrCode,
+      label: "My QR Code",
+      bg: "from-emerald-400 to-teal-400 hover:from-emerald-500 hover:to-teal-500",
+      onClick: () => router.push("/member-card"),
+    },
+    {
+      icon: CreditCard,
+      label: "Link Account",
+      bg: "from-blue-400 to-indigo-400 hover:from-blue-500 hover:to-indigo-500",
+    },
+    {
+      icon: Store,
+      label: "Find Merchants",
+      bg: "from-purple-400 to-pink-400 hover:from-purple-500 hover:to-pink-500",
+      onClick: () => router.push("/merchants"),
+    },
+    {
+      icon: TrendingUp,
+      label: "View Portfolio",
+      bg: "from-amber-400 to-orange-400 hover:from-amber-500 hover:to-orange-500",
 
-  },
-];
+      onClick: () => router.push("/portfolio"),
+    },
+  ];
 
+  const stats: StatItem[] = [
+    {
+      title: "Portfolio Value",
+      value: "$0.00",
+      subLabel: "Total invested",
+      delta: "+12.5%",
+      icon: <Wallet size={18} className="text-white" />,
+    },
+    {
+      title: "Total Rewards",
+      value: "$0.00",
+      subLabel: "Lifetime earned",
+      delta: "+$24.50",
+      icon: <DollarSign size={18} className="text-white" />,
+    },
+    {
+      title: "Pending Rewards",
+      value: "$0.00",
+      subLabel: "Next investment",
+      delta: "+3.2%",
+      icon: <TrendingUp size={18} className="text-white" />,
+    },
+    {
+      title: "Linked Accounts",
+      value: accountCount,
+      subLabel: "Connected",
+      delta: "+1",
+      icon: <CreditCard size={18} className="text-white" />,
+    },
+  ];
 
   return (
     <>
@@ -90,18 +206,33 @@ const Dashboard = () => {
         <Section customClass="relative mb-6">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
             {stats.map(({ title, value, delta, icon, subLabel }) => (
-              <div key={title} className="group rounded-xl text-card-foreground p-4 lg:p-6 bg-white/95 backdrop-blur-sm border border-slate-200/50 shadow-lg hover:shadow-xl hover:scale-102 transition-all duration-300">
+              <div
+                key={title}
+                className="group rounded-xl text-card-foreground p-4 lg:p-6 bg-white/95 backdrop-blur-sm border border-slate-200/50 shadow-lg hover:shadow-xl hover:scale-102 transition-all duration-300"
+              >
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="shrink-0 grid h-12 w-12 place-items-center rounded-2xl bg-gradient-to-r from-cyan-500 to-sky-500 text-white text-md shadow-lg shadow-cyan-500/20 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-6">{icon}</div>
+                  <div className="shrink-0 grid h-12 w-12 place-items-center rounded-2xl bg-gradient-to-r from-cyan-500 to-sky-500 text-white text-md shadow-lg shadow-cyan-500/20 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-6">
+                    {icon}
+                  </div>
                   <div className="flex flex-col gap-0.5 flex-1 min-w-0">
-                    <p className="text-[15px] font-medium text-black line-clamp-1"> {title} </p>
-                    <h3 className="text-2xl font-semibold tracking-tight text-gray-900 line-clamp-1">{value}</h3>
+                    <p className="text-[15px] font-medium text-black line-clamp-1">
+                      {" "}
+                      {title}{" "}
+                    </p>
+                    <h3 className="text-2xl font-semibold tracking-tight text-gray-900 line-clamp-1">
+                      {value}
+                    </h3>
                   </div>
                 </div>
-                <p className="text-xs lg:text-sm text-slate-500 mb-1">{subLabel}</p>
+                <p className="text-xs lg:text-sm text-slate-500 mb-1">
+                  {subLabel}
+                </p>
                 <div className="text-xs lg:text-sm text-green-600">
                   <span className="font-medium">{delta}</span>
-                  <span className="text-neutral-darkGray">{" "}from last month</span>
+                  <span className="text-neutral-darkGray">
+                    {" "}
+                    from last month
+                  </span>
                 </div>
               </div>
             ))}
@@ -112,29 +243,104 @@ const Dashboard = () => {
       <AnimateSection>
         <Section customClass="relative mb-6">
           <div className="w-full rounded-2xl border bg-card text-card-foreground bg-gradient-to-br from-purple-50 via-white to-blue-50 border-purple-200/50 shadow-xl">
-            <div className="flex flex-col space-y-1.5 p-6 cursor-pointer" onClick={() => setIsOpen((prev) => !prev)}>
+            <div
+              className="flex flex-col space-y-1.5 p-6 cursor-pointer"
+              onClick={() => setIsOpen((prev) => !prev)}
+            >
               <div className="flex items-center justify-between">
-                <h3 className="text-2xl font-semibold leading-none tracking-tight flex items-center gap-2 text-slate-900"> <Sparkles className="w-5 h-5 text-purple-600" /> AI FinancialAdvisor</h3>
-                <Button variant="ghost" size="icon" type="button" onClick={(e) => {e.stopPropagation(); setIsOpen((prev) => !prev);}}className="!p-0 !h-auto">{isOpen ? (<ChevronUp className="w-5 h-5" />) : (<ChevronDown className="w-5 h-5" />)}</Button>
+                <h3 className="text-2xl font-semibold leading-none tracking-tight flex items-center gap-2 text-slate-900">
+                  {" "}
+                  <Sparkles className="w-5 h-5 text-purple-600" /> AI
+                  FinancialAdvisor
+                </h3>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIsOpen((prev) => !prev);
+                  }}
+                  className="!p-0 !h-auto"
+                >
+                  {isOpen ? (
+                    <ChevronUp className="w-5 h-5" />
+                  ) : (
+                    <ChevronDown className="w-5 h-5" />
+                  )}
+                </Button>
               </div>
-              <p className="text-sm text-slate-600 mt-1">Ask personalized questions about your finances, investments, and rewards.</p>
+              <p className="text-sm text-slate-600 mt-1">
+                Ask personalized questions about your finances, investments, and
+                rewards.
+              </p>
             </div>
             {isOpen && (
               <div className="p-6 pt-0 space-y-4">
                 <div className="space-y-2">
-                  <p className="text-sm font-medium text-slate-700">Quick Questions:</p>
+                  <p className="text-sm font-medium text-slate-700">
+                    Quick Questions:
+                  </p>
                   <div className="grid grid-cols-1 gap-2">
                     {quickQuestions.map((q) => (
-                      <Button variant="outlineGradient" key={q} type="button" onClick={() => handleQuickClick(q)} className="justify-start !text-black !font-normal">💡 {q}</Button>
+                      <Button
+                        variant="outlineGradient"
+                        key={q}
+                        type="button"
+                        onClick={() => handleQuickClick(q)}
+                        className="justify-start !text-black !font-normal"
+                      >
+                        💡 {q}
+                      </Button>
                     ))}
                   </div>
                 </div>
                 <form onSubmit={handleSubmit} className="space-y-3">
-                  <textarea className="flex w-full rounded-md border px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-400 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 min-h-[100px] border-purple-200" placeholder="Ask about investment strategies, rewards optimization, financial goals..." value={question} onChange={(e) => setQuestion(e.target.value)}/>
-                  <Button variant="gradientPurpleBlue" type="submit" disabled={!question.trim()} className="w-full gap-2 shadow-lg disabled:opacity-60 disabled:cursor-not-allowed"> <Send className="w-4 h-4" /> Get AI Insights</Button>
+                  <textarea
+                    className="flex w-full rounded-md border px-3 py-2 text-sm ..."
+                    placeholder="Ask about investment strategies..."
+                    value={question}
+                    onChange={(e) => setQuestion(e.target.value)}
+                  />
+
+                  <Button
+                    variant="gradientPurpleBlue"
+                    type="submit"
+                    disabled={!question.trim() || aiLoading}
+                    className="w-full gap-2 shadow-lg"
+                  >
+                    {aiLoading ? (
+                      "Analyzing..."
+                    ) : (
+                      <>
+                        <Send className="w-4 h-4" /> Get AI Insights
+                      </>
+                    )}
+                  </Button>
                 </form>
+                {answer && <FinancialAdvisorAnswer answer={answer} />}
+                {aiError && (
+                  <div className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-600">
+                    {aiError}
+                  </div>
+                )}
+
                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-                  <p className="text-xs text-blue-800"> <Sparkles className="w-3 h-3 inline mr-1" />{" "} <strong>AI-Powered:</strong> Responses are generated using real-time data and internet grounding. Always consult with financial professionals for major decisions.</p>
+                  <p className="text-xs text-blue-800">
+                    <Sparkles className="w-3 h-3 inline mr-1" />
+                    <strong>AI-Powered:</strong> Responses are generated using
+                    real-time data.
+                  </p>
+                </div>
+
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                  <p className="text-xs text-blue-800">
+                    {" "}
+                    <Sparkles className="w-3 h-3 inline mr-1" />{" "}
+                    <strong>AI-Powered:</strong> Responses are generated using
+                    real-time data and internet grounding. Always consult with
+                    financial professionals for major decisions.
+                  </p>
                 </div>
               </div>
             )}
@@ -149,54 +355,88 @@ const Dashboard = () => {
               <div className="h-full rounded-2xl bg-white/95 border border-slate-200 shadow-xl hover:shadow-2xl transition-all duration-500 flex flex-col">
                 <div className="p-4 flex items-center gap-2 border-b border-slate-100">
                   <FiActivity className="w-5 h-5 text-cyan-600" />
-                  <h3 className="text-lg font-semibold text-slate-900">Recent Rewards</h3>
+                  <h3 className="text-lg font-semibold text-slate-900">
+                    Recent Rewards
+                  </h3>
                 </div>
                 <div className="flex-1 flex flex-col items-center justify-center text-center text-slate-500 px-4">
                   <div className="relative mb-4">
                     <div className="h-32 w-32 rounded-full border border-cyan-200/80 p-1.5 shadow-inner bg-black overflow-hidden">
-                      <img src="/images/logo.png" alt="Logo Images" className="h-full w-full rounded-full object-cover"/>
+                      <img
+                        src="/images/logo.png"
+                        alt="Logo Images"
+                        className="h-full w-full rounded-full object-cover"
+                      />
                     </div>
                   </div>
-                  <p className="font-medium text-slate-700">No transactions yet</p>
-                  <p className="text-sm text-slate-500 mt-1">Start shopping to earn rewards! 💰</p>
+                  <p className="font-medium text-slate-700">
+                    No transactions yet
+                  </p>
+                  <p className="text-sm text-slate-500 mt-1">
+                    Start shopping to earn rewards! 💰
+                  </p>
                 </div>
               </div>
               <div className="grid sm:grid-cols-2 lg:grid-cols-2 gap-4 lg:gap-6">
                 <div className="rounded-2xl border bg-card text-card-foreground bg-gradient-to-br from-white via-white to-amber-50/30 backdrop-blur-sm border-slate-200/50 shadow-xl hover:shadow-2xl transition-all duration-500">
                   <div className="p-4 flex items-center gap-2 border-b border-slate-100">
                     <FiBarChart2 className="w-5 h-5 text-purple-600" />
-                    <h3 className="text-lg font-semibold text-slate-900">Spending Insights</h3>
+                    <h3 className="text-lg font-semibold text-slate-900">
+                      Spending Insights
+                    </h3>
                   </div>
                   <div className="p-4 space-y-3">
                     <div className="flex items-center justify-between px-4 py-3 rounded-2xl bg-gradient-to-r from-slate-50/50 to-white/80 border border-slate-200/50 hover:border-purple-200/60 hover:shadow-lg transition-all duration-300 hover:translate-x-[3px] hover:scale-[1.01]">
                       <div className="flex items-center gap-3">
-                        <div className="p-2 rounded-2xl bg-gradient-to-r from-blue-400 to-blue-600 shadow-lg"><DollarSign size={18} className="text-white" /></div>
+                        <div className="p-2 rounded-2xl bg-gradient-to-r from-blue-400 to-blue-600 shadow-lg">
+                          <DollarSign size={18} className="text-white" />
+                        </div>
                         <div>
-                          <p className="text-sm font-medium text-slate-800">This Month</p>
-                          <p className="text-xs text-slate-500">Total Spending</p>
+                          <p className="text-sm font-medium text-slate-800">
+                            This Month
+                          </p>
+                          <p className="text-xs text-slate-500">
+                            Total Spending
+                          </p>
                         </div>
                       </div>
-                      <p className="text-sm font-semibold text-slate-900">$0.00</p>
+                      <p className="text-sm font-semibold text-slate-900">
+                        $0.00
+                      </p>
                     </div>
                     <div className="flex items-center justify-between px-4 py-3 rounded-2xl bg-gradient-to-r from-slate-50/50 to-white/80 border border-slate-200/50 hover:border-purple-200/60 hover:shadow-lg transition-all duration-300 hover:translate-x-[3px] hover:scale-[1.01]">
                       <div className="flex items-center gap-3">
-                        <div className="p-2 rounded-2xl bg-gradient-to-r from-emerald-400 to-emerald-600 shadow-lg"><DollarSign size={18} className="text-white" /></div>
+                        <div className="p-2 rounded-2xl bg-gradient-to-r from-emerald-400 to-emerald-600 shadow-lg">
+                          <DollarSign size={18} className="text-white" />
+                        </div>
                         <div>
-                          <p className="text-sm font-medium text-slate-800">Rewards Earned</p>
-                          <p className="text-xs text-slate-500">0.0% avg rate</p>
+                          <p className="text-sm font-medium text-slate-800">
+                            Rewards Earned
+                          </p>
+                          <p className="text-xs text-slate-500">
+                            0.0% avg rate
+                          </p>
                         </div>
                       </div>
-                      <p className="text-sm font-semibold text-slate-900">$0.00</p>
+                      <p className="text-sm font-semibold text-slate-900">
+                        $0.00
+                      </p>
                     </div>
                     <div className="flex items-center justify-between px-4 py-3 rounded-2xl bg-gradient-to-r from-slate-50/50 to-white/80 border border-slate-200/50 hover:border-purple-200/60 hover:shadow-lg transition-all duration-300 hover:translate-x-[3px] hover:scale-[1.01]">
                       <div className="flex items-center gap-3">
-                        <div className="p-2 rounded-2xl bg-gradient-to-r from-purple-400 to-purple-600 shadow-lg"><DollarSign size={18} className="text-white" /></div>
+                        <div className="p-2 rounded-2xl bg-gradient-to-r from-purple-400 to-purple-600 shadow-lg">
+                          <DollarSign size={18} className="text-white" />
+                        </div>
                         <div>
-                          <p className="text-sm font-medium text-slate-800">Top Category</p>
+                          <p className="text-sm font-medium text-slate-800">
+                            Top Category
+                          </p>
                           <p className="text-xs text-slate-500">$0.00 spent</p>
                         </div>
                       </div>
-                      <p className="text-sm font-semibold text-slate-900">No data</p>
+                      <p className="text-sm font-semibold text-slate-900">
+                        No data
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -204,22 +444,41 @@ const Dashboard = () => {
                   <div className="p-4 flex items-center justify-between gap-2 border-b border-slate-100">
                     <div className="flex items-center gap-2">
                       <Trophy className="w-5 h-5 text-amber-600 animate-rotateOnce" />
-                      <h3 className="text-lg font-semibold text-slate-900">Your Achievements</h3>
+                      <h3 className="text-lg font-semibold text-slate-900">
+                        Your Achievements
+                      </h3>
                     </div>
-                    <span className="inline-flex items-center rounded-full bg-gradient-to-r from-amber-500 to-orange-500 px-3 py-0.5 text-xs font-medium text-white">0/6</span>
+                    <span className="inline-flex items-center rounded-full bg-gradient-to-r from-amber-500 to-orange-500 px-3 py-0.5 text-xs font-medium text-white">
+                      0/6
+                    </span>
                   </div>
                   <div className="p-4">
                     <div className="grid grid-cols-2 gap-3">
                       {BADGES.map(({ icon: Icon, title, description }) => (
-                        <div key={title} className="p-3 rounded-lg text-center bg-slate-50 text-slate-400 border border-slate-200 grayscale hover:-translate-y-1 hover:shadow-xl transition-all duration-500">
+                        <div
+                          key={title}
+                          className="p-3 rounded-lg text-center bg-slate-50 text-slate-400 border border-slate-200 grayscale hover:-translate-y-1 hover:shadow-xl transition-all duration-500"
+                        >
                           <Icon className="w-6 h-6 mx-auto mb-2 text-slate-500" />
-                          <p className="text-xs font-semibold text-slate-800 mb-1">{title}</p>
-                          <p className="text-[11px] text-slate-500 leading-snug">{description}</p>
+                          <p className="text-xs font-semibold text-slate-800 mb-1">
+                            {title}
+                          </p>
+                          <p className="text-[11px] text-slate-500 leading-snug">
+                            {description}
+                          </p>
                         </div>
                       ))}
                     </div>
                     <div className="mt-3 text-center">
-                      <p className="text-xs text-slate-500"> 🎯 Keep going!{" "} <span className="font-semibold text-cyan-600"> 6 more </span>{" "} to unlock</p>
+                      <p className="text-xs text-slate-500">
+                        {" "}
+                        🎯 Keep going!{" "}
+                        <span className="font-semibold text-cyan-600">
+                          {" "}
+                          6 more{" "}
+                        </span>{" "}
+                        to unlock
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -227,43 +486,80 @@ const Dashboard = () => {
             </div>
             <div className="col-span-1 sm:col-span-2 lg:col-span-2 flex flex-col gap-4 lg:gap-6">
               <div className="rounded-2xl border bg-gradient-to-br from-white via-white to-cyan-50/30 backdrop-blur-sm border-slate-200/50 shadow-xl hover:shadow-2xl transition-all duration-500">
-                <div className="p-4 flex items-center gap-2 border-b border-slate-100">
+                {/* <div className="p-4 flex items-center gap-2 border-b border-slate-100">
                   <QrCode className="w-4 h-4 lg:w-5 lg:h-5 text-cyan-600" />
-                  <h3 className="text-slate-900 text-base lg:text-lg font-semibold tracking-tight">Your ARRC Member Card</h3>
-                </div>
-                <div className="p-6 space-y-4 lg:space-y-6">
+                  <h3 className="text-slate-900 text-base lg:text-lg font-semibold tracking-tight">
+                    Your ARRC Member Card
+                  </h3>
+                </div> */}
+                  <MemberCardWidget />
+                {/* <div className="p-6 space-y-4 lg:space-y-6">
                   <div className="text-center space-y-3 lg:space-y-4">
                     <div className="space-y-2">
-                      <p className="text-xs lg:text-sm font-medium text-slate-600">ARRC Member ID</p>
+                      <p className="text-xs lg:text-sm font-medium text-slate-600">
+                        ARRC Member ID
+                      </p>
                       <div className="flex items-center justify-center gap-2 lg:gap-3 flex-wrap">
-                        <div className="inline-flex items-center rounded-full font-semibold text-base font-mono bg-cyan-100/50 text-cyan-800 px-3 lg:px-4 py-1 lg:py-2 border border-cyan-200/60">2542041</div>
-                        <Button size="icon" variant="slateSoft" rounded="lg" className=""><Copy className="w-3 h-3 lg:w-4 lg:h-4" /></Button>
+                        <div className="inline-flex items-center rounded-full font-semibold text-base font-mono bg-cyan-100/50 text-cyan-800 px-3 lg:px-4 py-1 lg:py-2 border border-cyan-200/60">
+                          2542041
+                        </div>
+                        <Button
+                          size="icon"
+                          variant="slateSoft"
+                          rounded="lg"
+                          className=""
+                        >
+                          <Copy className="w-3 h-3 lg:w-4 lg:h-4" />
+                        </Button>
                       </div>
                     </div>
                     <div className="space-y-3 lg:space-y-4">
                       <div className="bg-white p-3 lg:p-4 rounded-xl border border-slate-200 inline-block shadow-inner">
-                        <img src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/68a2b6e7e9a803fb92318e56/40b836f82_generated_image.png" alt="ARRC QR Code" className="w-36 h-36 lg:w-48 lg:h-48 object-contain mx-auto"/>
+                        <img
+                          src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/68a2b6e7e9a803fb92318e56/40b836f82_generated_image.png"
+                          alt="ARRC QR Code"
+                          className="w-36 h-36 lg:w-48 lg:h-48 object-contain mx-auto"
+                        />
                       </div>
                       <div className="space-y-2">
-                        <p className="text-xs lg:text-sm text-slate-600 px-2"> Show this QR code at participating merchants to earn rewards</p>
-                        <Button variant="outline" size="default" type="button" className="inline-flex items-center justify-center gap-2"> <Download className="w-3 h-3 lg:w-4 lg:h-4" />{" "} Download QR Code</Button>
+                        <p className="text-xs lg:text-sm text-slate-600 px-2">
+                          {" "}
+                          Show this QR code at participating merchants to earn
+                          rewards
+                        </p>
+                        <Button
+                          variant="outline"
+                          size="default"
+                          type="button"
+                          className="inline-flex items-center justify-center gap-2"
+                        >
+                          {" "}
+                          <Download className="w-3 h-3 lg:w-4 lg:h-4" />{" "}
+                          Download QR Code
+                        </Button>
                       </div>
                     </div>
                   </div>
                   <div className="bg-sky-50/70 border border-sky-200/50 rounded-xl p-3 lg:p-4">
-                    <h4 className="font-semibold text-sky-800 mb-2 text-sm lg:text-base">How to use:</h4>
+                    <h4 className="font-semibold text-sky-800 mb-2 text-sm lg:text-base">
+                      How to use:
+                    </h4>
                     <ul className="text-xs lg:text-sm text-sky-700 space-y-1 ps-5 list-disc list-outside">
                       <li>Show QR code at checkout for instant rewards</li>
-                      <li>Use your 7-digit ARRC ID if QR code can’t be scanned</li>
+                      <li>
+                        Use your 7-digit ARRC ID if QR code can’t be scanned
+                      </li>
                       <li>Both methods automatically track your purchases</li>
                     </ul>
                   </div>
-                </div>
+                </div> */}
               </div>
               <div className="rounded-2xl border bg-gradient-to-br from-white via-white to-cyan-50/30 backdrop-blur-sm border-slate-200/50 shadow-xl hover:shadow-2xl transition-all duration-500">
                 <div className="p-4 flex items-center gap-2 border-b border-slate-100">
                   <Zap className="w-5 h-5 text-amber-600" />
-                  <h3 className="text-lg font-semibold text-slate-900">Quick Actions</h3>
+                  <h3 className="text-lg font-semibold text-slate-900">
+                    Quick Actions
+                  </h3>
                 </div>
                 <div className="p-4">
                   <div className="grid grid-cols-2 gap-3">
@@ -281,6 +577,8 @@ const Dashboard = () => {
                 </div>
               </div>
             </div>
+             
+
           </div>
         </Section>
       </AnimateSection>
@@ -291,39 +589,52 @@ const Dashboard = () => {
             <div className="rounded-2xl border border-sky-200/50 bg-card text-card-foreground bg-gradient-to-r from-sky-100/50 to-blue-100/50 shadow-lg hover:shadow-2xl transition-all duration-500">
               <div className="p-5 lg:p-6">
                 <div className="flex flex-col items-center text-center space-y-4">
-                  <div className="w-14 h-14 lg:w-16 lg:h-16 rounded-full bg-sky-200/50 flex items-center justify-center"> <CreditCard className="w-7 h-7 lg:w-8 lg:h-8 text-slate-700" /> </div>
-                  <div>
-                    <h3 className="text-lg lg:text-xl font-semibold text-slate-900 mb-1">Ready for the next step?</h3>
-                    <p className="text-sm lg:text-base text-slate-600"> Connect your investment accounts to start earning rewards with every purchase.</p>
+                  <div className="w-14 h-14 lg:w-16 lg:h-16 rounded-full bg-sky-200/50 flex items-center justify-center">
+                    {" "}
+                    <CreditCard className="w-7 h-7 lg:w-8 lg:h-8 text-slate-700" />{" "}
                   </div>
-               <Button
-                  variant="sky"
-                  size="default"
-                  rounded="lg"
-                  type="button"
-                  onClick={() => router.push("/accounts")}
-                  className="inline-flex items-center justify-center gap-2 rounded-md text-sm font-medium h-10 px-4 py-2 bg-slate-900 text-white hover:bg-slate-800 transition-colors w-full sm:w-auto"
-                >
-                  <CreditCard className="w-4 h-4" />
-                  <span>Link your accounts</span>
-                  <TrendingUp className="w-4 h-4" />
-                </Button>
+                  <div>
+                    <h3 className="text-lg lg:text-xl font-semibold text-slate-900 mb-1">
+                      Ready for the next step?
+                    </h3>
+                    <p className="text-sm lg:text-base text-slate-600">
+                      {" "}
+                      Connect your investment accounts to start earning rewards
+                      with every purchase.
+                    </p>
+                  </div>
+                  <Button
+                    variant="sky"
+                    size="default"
+                    rounded="lg"
+                    type="button"
+                    onClick={() => router.push("/accounts")}
+                    className="inline-flex items-center justify-center gap-2 rounded-md text-sm font-medium h-10 px-4 py-2 bg-slate-900 text-white hover:bg-slate-800 transition-colors w-full sm:w-auto"
+                  >
+                    <CreditCard className="w-4 h-4" />
+                    <span>Link your accounts</span>
+                    <TrendingUp className="w-4 h-4" />
+                  </Button>
                 </div>
               </div>
             </div>
             <div className="h-full flex flex-col rounded-2xl border bg-gradient-to-br from-white via-white to-cyan-50/30 backdrop-blur-sm border-slate-200/50 shadow-xl hover:shadow-2xl transition-all duration-500">
               <div className="p-4 flex items-center gap-2 border-b border-slate-100">
                 <TrendingUp className="w-5 h-5 text-sky-600" />
-                <h3 className="text-lg font-semibold text-slate-900">Portfolio Overview</h3>
+                <h3 className="text-lg font-semibold text-slate-900">
+                  Portfolio Overview
+                </h3>
               </div>
               <div className="flex-1 p-4 flex flex-col justify-center space-y-4 text-center">
                 <div className="space-y-1">
                   <p className="text-3xl font-bold text-slate-900">$0.00</p>
                   <div className="flex items-center justify-center gap-1 text-sm font-medium text-emerald-600">
-                    <TrendingUp className="w-4 h-4" />{" "} <span>$0.00 (0.0%)</span>
+                    <TrendingUp className="w-4 h-4" /> <span>$0.00 (0.0%)</span>
                   </div>
                 </div>
-                <div className="text-xs text-slate-500"><p>No portfolio data yet.</p></div>
+                <div className="text-xs text-slate-500">
+                  <p>No portfolio data yet.</p>
+                </div>
               </div>
             </div>
           </div>

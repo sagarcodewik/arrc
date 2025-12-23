@@ -50,4 +50,9 @@ export const API_REWARD_CONVERT= "/rewards/convert";
 export const API_GET_ALL_CATEGORY= "categories/all-categories";
 export const API_GET_CATEGORY_BY_ID = "category-items/list"; 
 
+export const API_GET_FINANCIAL_ADVISOR = "/ai/financial-advisor"; 
+
+export const API_WEBAUTHN_AUTH_OPTIONS = "/webauthn/auth-options";
+export const API_WEBAUTHN_AUTH_VERIFY = "/webauthn/auth-verify";
+
 

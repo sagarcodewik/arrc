@@ -1,16 +1,17 @@
 import classNames from 'classnames';
 import styles from './style.module.scss';
-import { JSX } from 'react';
+import { ReactNode } from 'react';
 
 interface ISection {
-  children: JSX.Element;
+  children: ReactNode;
   customClass?: string;
+  className?: string;
   refInSection?: any;
 }
 
-const Section = ({ children, customClass, refInSection }: ISection) => {
+const Section = ({ children, customClass, className, refInSection }: ISection) => {
   return (
-    <section ref={refInSection} className={classNames(styles.Section, customClass)}>
+    <section ref={refInSection} className={classNames(styles.Section, customClass, className)}>
       {children}
     </section>
   );
