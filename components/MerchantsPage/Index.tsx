@@ -1,5 +1,4 @@
 "use client";
-
 import { useEffect, useState } from "react";
 import AnimateSection from "../AnimateSection";
 import Section from "../Section";

@@ -95,7 +95,6 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
 
   return (
     <>
-
       <AnimatePresence>
         {open && (
           <>
@@ -106,7 +105,6 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
           </>
         )}
       </AnimatePresence>
-
 
       <aside className="hidden lg:fixed lg:inset-y-0 lg:left-0 lg:z-40 lg:block lg:w-64 lg:border-r lg:border-gray-200 lg:bg-white">
         <SidebarContent />
@@ -173,7 +171,6 @@ function SidebarContent({ onClose }: { onClose?: () => void }) {
             })}
           </ul>
         </div>
-
         <div className="flex w-full flex-col">
           <div className="mb-3 flex h-6 items-center rounded-md px-2 text-xs font-semibold text-slate-600">Business</div>
           <ul className="flex w-full flex-col gap-1">
