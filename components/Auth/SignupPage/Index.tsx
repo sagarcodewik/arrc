@@ -14,7 +14,11 @@ import Modal from "@/components/ui/Modal";
 import ShowToast from "@/components/Common/ShowToast";
 
 import { FiMail } from "react-icons/fi";
-import { MdOutlineLock } from "react-icons/md";
+import {
+  MdOutlineLock,
+  MdVisibility,
+  MdVisibilityOff,
+} from "react-icons/md";
 
 import {
   API_REGISTER,
@@ -23,12 +27,8 @@ import {
 } from "@/utils/api/APIConstant";
 import { apiPost } from "@/utils/endpoints/common";
 
-/* ---------------- VALIDATION ---------------- */
-
 const SignupSchema = Yup.object().shape({
-  email: Yup.string()
-    .email("Enter a valid email")
-    .required("Email is required"),
+  email: Yup.string().email("Enter a valid email").required("Email is required"),
   password: Yup.string()
     .min(8, "Minimum 8 characters")
     .matches(/[A-Z]/, "One uppercase letter required")
@@ -39,7 +39,6 @@ const SignupSchema = Yup.object().shape({
     .required("Confirm your password"),
 });
 
-/* ---------------- PASSWORD STRENGTH ---------------- */
 
 const getStrength = (password: string) => {
   let score = 0;
@@ -59,8 +58,6 @@ const strengthColor = [
   "bg-emerald-500",
 ];
 
-/* ================= COMPONENT ================= */
-
 export default function SignupPage() {
   const router = useRouter();
   const dispatch = useDispatch();
@@ -72,17 +69,16 @@ export default function SignupPage() {
   const [resendLoading, setResendLoading] = useState(false);
   const [timer, setTimer] = useState(60);
 
-  const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  /* ---------------- OTP TIMER ---------------- */
+  const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   useEffect(() => {
     if (!otpModalOpen || timer === 0) return;
     const interval = setInterval(() => setTimer((t) => t - 1), 1000);
     return () => clearInterval(interval);
   }, [otpModalOpen, timer]);
-
-  /* ---------------- OTP INPUT ---------------- */
 
   const handleOtpChange = (index: number, value: string) => {
     const clean = value.replace(/\D/g, "");
@@ -113,8 +109,6 @@ export default function SignupPage() {
     }
   };
 
-  /* ---------------- VERIFY OTP ---------------- */
-
   const handleVerifyOtp = async () => {
     if (otpLoading) return;
 
@@ -130,10 +124,7 @@ export default function SignupPage() {
 
       const res = await apiPost({
         url: API_OTP_VERIFICATION,
-        values: {
-          email: registeredEmail,
-          otp: finalOtp,
-        },
+        values: { email: registeredEmail, otp: finalOtp },
       });
 
       if (!res?.success) {
@@ -141,20 +132,14 @@ export default function SignupPage() {
         return;
       }
 
-      /* ✅ SAVE AUTH IN REDUX */
       dispatch(
         onLoginSuccess({
-          data: {
-            user: res.data.user,
-            token: res.data.token,
-          },
+          data: { user: res.data.user, token: res.data.token },
         })
       );
 
       ShowToast("OTP verified successfully", "success");
       setOtpModalOpen(false);
-
-      /* ✅ REDIRECT */
       router.push("/dashboard");
     } catch {
       ShowToast("Network error", "error");
@@ -162,8 +147,6 @@ export default function SignupPage() {
       setOtpLoading(false);
     }
   };
-
-  /* ---------------- RESEND OTP ---------------- */
 
   const handleResendOtp = async () => {
     try {
@@ -189,8 +172,6 @@ export default function SignupPage() {
       setResendLoading(false);
     }
   };
-
-  /* ================= UI ================= */
 
   return (
     <>
@@ -243,7 +224,13 @@ export default function SignupPage() {
               }
             }}
           >
-            {({ values, handleChange, isSubmitting }) => {
+            {({
+              values,
+              handleChange,
+              isSubmitting,
+              errors,
+              touched,
+            }) => {
               const strength = getStrength(values.password);
 
               return (
@@ -256,14 +243,28 @@ export default function SignupPage() {
                     leftIcon={<FiMail size={18} />}
                   />
 
-                  <Input
-                    label="Password"
-                    type="password"
-                    name="password"
-                    value={values.password}
-                    onChange={handleChange}
-                    leftIcon={<MdOutlineLock size={18} />}
-                  />
+                  {/* PASSWORD */}
+                  <div className="relative">
+                    <Input
+                      label="Password"
+                      type={showPassword ? "text" : "password"}
+                      name="password"
+                      value={values.password}
+                      onChange={handleChange}
+                      leftIcon={<MdOutlineLock size={18} />}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-4 top-[34px] text-slate-500 hover:text-slate-700"
+                    >
+                      {showPassword ? (
+                        <MdVisibilityOff size={20} />
+                      ) : (
+                        <MdVisibility size={20} />
+                      )}
+                    </button>
+                  </div>
 
                   {values.password && (
                     <div>
@@ -278,15 +279,34 @@ export default function SignupPage() {
                       </p>
                     </div>
                   )}
+                <div className="relative">
+                      <Input
+                        label="Confirm Password"
+                        type={showConfirmPassword ? "text" : "password"}
+                        name="confirmPassword"
+                        value={values.confirmPassword}
+                        onChange={handleChange}
+                        leftIcon={<MdOutlineLock size={18} />}
+                      />
 
-                  <Input
-                    label="Confirm Password"
-                    type="password"
-                    name="confirmPassword"
-                    value={values.confirmPassword}
-                    onChange={handleChange}
-                    leftIcon={<MdOutlineLock size={18} />}
-                  />
+                      <button
+                        type="button"
+                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                        className="absolute right-4 top-[34px] text-slate-500 hover:text-slate-700"
+                      >
+                        {showConfirmPassword ? (
+                          <MdVisibilityOff size={20} />
+                        ) : (
+                          <MdVisibility size={20} />
+                        )}
+                      </button>
+                    </div>
+
+                    {errors.confirmPassword && touched.confirmPassword && (
+                      <p className="text-xs text-red-500">
+                        {errors.confirmPassword}
+                      </p>
+                    )}
 
                   <Button
                     type="submit"
@@ -301,8 +321,6 @@ export default function SignupPage() {
           </Formik>
         </div>
       </div>
-
-      {/* ---------------- OTP MODAL ---------------- */}
 
       <Modal open={otpModalOpen} onClose={() => setOtpModalOpen(false)}>
         <div className="space-y-5">

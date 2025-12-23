@@ -13,7 +13,7 @@ import ShowToast from "@/components/Common/ShowToast";
 import { FiMail } from "react-icons/fi";
 import { FcGoogle } from "react-icons/fc";
 import { RiFacebookCircleFill } from "react-icons/ri";
-import { MdOutlineLock } from "react-icons/md";
+import { MdOutlineLock, MdVisibility, MdVisibilityOff } from "react-icons/md";
 
 import { API_LOGIN } from "@/utils/api/APIConstant";
 import { apiPost } from "@/utils/endpoints/common";
@@ -34,6 +34,7 @@ const LoginPage = () => {
   const dispatch=useDispatch()
   const [openForgetModal, setOpenForgetModal] = useState(false);
   const [showFirst, setShowFirst] = useState(true);
+  const [showPassword, setShowPassword] = useState(false);
 
   return (
     <>
@@ -156,7 +157,7 @@ const LoginPage = () => {
                           <p className="text-xs text-red-500">{errors.email}</p>
                         )}
 
-                        <Input
+                        {/* <Input
                           label="Password"
                           type="password"
                           name="password"
@@ -168,7 +169,30 @@ const LoginPage = () => {
                           <p className="text-xs text-red-500">
                             {errors.password}
                           </p>
-                        )}
+                        )} */}
+                    <div className="relative">
+                          <Input
+                            label="Password"
+                            type={showPassword ? "text" : "password"}
+                            name="password"
+                            value={values.password}
+                            onChange={handleChange}
+                            leftIcon={<MdOutlineLock size={20} />}
+                          />
+
+                          <button
+                            type="button"
+                            onClick={() => setShowPassword(!showPassword)}
+                            className="absolute right-4 top-[34px] text-slate-500 hover:text-slate-700"
+                          >
+                            {showPassword ? (
+                              <MdVisibilityOff size={20} />
+                            ) : (
+                              <MdVisibility size={20} />
+                            )}
+                          </button>
+                        </div>
+
 
                         <Button
                           variant="black"
