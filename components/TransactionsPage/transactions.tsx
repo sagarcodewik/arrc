@@ -22,6 +22,8 @@ import {
   SlidersHorizontal,
   Download,
   ShoppingCart,
+  TagIcon
+  
 } from "lucide-react";
 import { LuDownload, LuTag } from "react-icons/lu";
 import Input from "../ui/Input";
@@ -313,7 +315,7 @@ const TransactionsPage = () => {
                 className="border-0 h-auto py-2"
                 onClick={() => setActiveTab("categories")}
               >
-                🏷 <span className="hidden sm:inline">Categories</span>
+                🏷️ <span className="hidden sm:inline">Categories</span>
               </Button>
               <Button
                 variant={activeTab === "rules" ? "white" : "ghost"}

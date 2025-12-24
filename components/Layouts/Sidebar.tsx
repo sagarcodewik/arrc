@@ -74,7 +74,7 @@ const businessNavLinks: NavLink[] = [
   },
   {
     label: "Feature Your Business",
-    href: "/features",
+    href: "/BusinessAdvertising",
     icon: <Sparkles className="w-5 h-5 text-pink-600" />,
   },
 ];
@@ -191,7 +191,7 @@ function SidebarContent({ onClose }: { onClose?: () => void }) {
 
       <ul className="mt-auto border-t border-gray-100 p-4 space-y-1">
         <li>
-          <Link href="/about" className="group bg-white flex items-center gap-2 rounded-xl p-2 text-sm font-medium transition-all duration-200 hover:bg-slate-100">
+          <Link href="/About" className="group bg-white flex items-center gap-2 rounded-xl p-2 text-sm font-medium transition-all duration-200 hover:bg-slate-100">
             <CircleHelp className="w-5 h-5 text-gray-600" />
             <span className="truncate">About</span>
           </Link>

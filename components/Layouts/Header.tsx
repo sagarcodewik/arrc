@@ -4,6 +4,23 @@ import { useState, useEffect, useRef } from "react";
 import { Button } from "../ui/Button";
 import { API_GET_PROFILE } from "@/utils/api/APIConstant";
 import { apiPost,getApiWithOutQuery } from "@/utils/endpoints/common";
+import { usePathname } from "next/navigation";
+import { useSelector } from "react-redux";
+
+const ROUTE_TITLES: Record<string, string> = {
+  "/dashboard": "Dashboard",
+  "/accounts": "Accounts",
+  "/analytics": "Analytics",
+  "/business": "Business",
+  "/features": "Features",
+  "/markets": "Markets",
+  "/member-card": "Member Card",
+  "/merchants": "Merchants",
+  "/portfolio": "Portfolio",
+  "/transactions": "Transactions",
+  "/tvm": "TVM",
+};
+
 export default function Header({
   onMenuClick,
 }: {
@@ -15,6 +32,14 @@ export default function Header({
   const userRef = useRef<HTMLDivElement>(null);
   const [profile, setProfile] = useState<any>(null);
   const [profileLoading, setProfileLoading] = useState(true);
+  const pathname = usePathname();
+  const email = useSelector((state: any) => state.auth?.user?.email);
+  const pageKey = "/" + pathname.split("/").filter(Boolean)[0];
+
+  const pageTitle =
+    ROUTE_TITLES[pageKey] ||
+    pageKey.replace("/", "").replace(/-/g, " ");
+
 
   const loadProfile = async () => {
   try {
@@ -61,8 +86,11 @@ useEffect(() => {
       <div className="mx-auto flex h-full w-full max-w-full items-center gap-3 p-3 sm:p-4.5">
         <Button size="icon" onClick={onMenuClick} className="!bg-black lg:hidden inline-flex items-center justify-center rounded-lg p-2 hover:bg-gray-100"><Menu className="h-5 w-5" /></Button>
         <div className="flex-1">
-          <h3 className="text-xl lg:text-2xl text-slate-900 font-semibold antialiased line-clamp-1">Dashboard </h3>
-          <p className="text-sm font-normal antialiased line-clamp-1 hidden lg:block">Welcome back, {profile?.user?.email|| "User"}!</p>
+          {/* <h3 className="text-xl lg:text-2xl text-slate-900 font-semibold antialiased line-clamp-1">Dashboard </h3> */}
+          <h3 className="text-xl lg:text-2xl text-slate-900 font-semibold antialiased line-clamp-1 capitalize">
+              {pageTitle}
+            </h3>
+          <p className="text-sm font-normal antialiased line-clamp-1 hidden lg:block">Welcome back,{email ? email.split("@")[0] : "User"}!</p>
         </div>
         {/* <div className="relative" ref={notifRef}>
           <Button variant="link" size="icon" onClick={() => {setNotifOpen(!notifOpen); setUserOpen(false); }} className="!rounded-full hover:bg-gray-100">
@@ -83,6 +111,8 @@ useEffect(() => {
             </div>
           )} */}
         {/* </div> */}
+          <p className="text-sm font-normal antialiased line-clamp-1 hidden lg:block">{email}</p>
+
         <div className="relative" ref={userRef}>
           <Button variant="link" size="icon" onClick={() => {setUserOpen(!userOpen); setNotifOpen(false);}} className="h-8 w-8 bg-gradient-to-r from-cyan-500 to-sky-500 !rounded-full hover:bg-gray-100 flex items-center justify-center p-0">
             <img src="https://i.pravatar.cc/64?img=3" alt="User avatar" className="h-full w-full object-cover rounded-full ring-1 ring-gray-200 transition-opacity hidden"/>

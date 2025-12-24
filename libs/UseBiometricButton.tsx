@@ -2,15 +2,15 @@ import { Button } from "@/components/ui/Button";
 import { authenticateWithBiometric } from "./biometricAuth";
 
 const UseBiometricButton = () => {
-  const handleBiometric = async () => {
-    const result = await authenticateWithBiometric();
+const handleBiometric = async () => {
+  try {
+    await authenticateWithBiometric();
+    alert("Access granted");
+  } catch (e: any) {
+    alert(e.message);
+  }
+};
 
-    if (result.success) {
-      alert("Access granted");
-    } else {
-      alert(result.error || "Biometric failed");
-    }
-  };
 
   return (
     <Button onClick={handleBiometric}>

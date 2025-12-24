@@ -41,9 +41,11 @@ export const API_PLAID_TRANSACTIONS_DETAILS = "/plaid/transactions";
 
 export const API_PORTFOLIO_SUMMARY= "/portfolio/summary";
 export const API_PORTFOLIO_GET= "/portfolio/get-portfolio";
+export const API_SPENDING_INSIGHTS = "/portfolio/spending-insights";
 
 
 export const API_REWARD_CONVERT= "/rewards/convert";
+export const API_REWARD_RECENT = "/rewards/recent";
 
 
 // categories/all-categories
