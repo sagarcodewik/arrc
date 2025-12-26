@@ -140,7 +140,7 @@ export default function SignupPage() {
 
       ShowToast("OTP verified successfully", "success");
       setOtpModalOpen(false);
-      router.push("/Dashboard");
+      router.push("/dashboard");
     } catch {
       ShowToast("Network error", "error");
     } finally {
