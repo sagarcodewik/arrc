@@ -31,7 +31,7 @@ const LoginSchema = Yup.object().shape({
 
 const LoginPage = () => {
   const router = useRouter();
-  const dispatch=useDispatch()
+  const dispatch = useDispatch();
   const [openForgetModal, setOpenForgetModal] = useState(false);
   const [showFirst, setShowFirst] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
@@ -111,32 +111,30 @@ const LoginPage = () => {
                       </span>
                     </div>
                   </div>
-              <Formik
-                  initialValues={{ email: "", password: "" }}
-                  validationSchema={LoginSchema}
-                  onSubmit={async (values, { setSubmitting }) => {
-                    try {
-                      const response = await apiPost({
-                        url: API_LOGIN,
-                        values,
-                      });
-                      if (!response.success){
-                       ShowToast("Invalid Credentilals", "error");
-                      }else{
-                        ShowToast("Login successful", "success");
-                        dispatch(onLoginSuccess({ data: response.data }));
+                  <Formik
+                    initialValues={{ email: "", password: "" }}
+                    validationSchema={LoginSchema}
+                    onSubmit={async (values, { setSubmitting }) => {
+                      try {
+                        const response = await apiPost({
+                          url: API_LOGIN,
+                          values,
+                        });
+                        if (!response.success) {
+                          ShowToast("Invalid Credentilals", "error");
+                        } else {
+                          ShowToast("Login successful", "success");
+                          dispatch(onLoginSuccess({ data: response.data }));
+                        }
+
+                        router.push("/dashboard");
+                      } catch (error) {
+                        ShowToast("Network error. Please try again.", "error");
+                      } finally {
+                        setSubmitting(false);
                       }
-
-
-                      router.push("/Dashboard");
-                    } catch (error) {
-                      ShowToast("Network error. Please try again.", "error");
-                    } finally {
-                      setSubmitting(false);
-                    }
-                  }}
-                >
-
+                    }}
+                  >
                     {({
                       values,
                       errors,
@@ -170,7 +168,7 @@ const LoginPage = () => {
                             {errors.password}
                           </p>
                         )} */}
-                    <div className="relative">
+                        <div className="relative">
                           <Input
                             label="Password"
                             type={showPassword ? "text" : "password"}
@@ -192,7 +190,6 @@ const LoginPage = () => {
                             )}
                           </button>
                         </div>
-
 
                         <Button
                           variant="black"
@@ -216,7 +213,7 @@ const LoginPage = () => {
                             Forgot Password?
                           </Link>
 
-                         <p className="text-sm text-slate-500 text-center">
+                          <p className="text-sm text-slate-500 text-center">
                             Need an account?{" "}
                             <Link
                               href="/signup"
@@ -240,7 +237,9 @@ const LoginPage = () => {
         <div className="space-y-4">
           {showFirst ? (
             <>
-              <h3 className="text-xl font-bold text-black">Reset Your Password</h3>
+              <h3 className="text-xl font-bold text-black">
+                Reset Your Password
+              </h3>
               <Input label="Email Address" type="email" leftIcon={<FiMail />} />
             </>
           ) : (

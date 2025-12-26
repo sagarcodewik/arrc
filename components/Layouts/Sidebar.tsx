@@ -33,42 +33,42 @@ type NavLink = {
 const mainNavLinks: NavLink[] = [
   {
     label: "Dashboard",
-    href: "/Dashboard",
+    href: "/dashboard",
     icon: <House className="w-5 h-5 text-cyan-600" />,
   },
   {
     label: "Accounts",
-    href: "/Accounts",
+    href: "/accounts",
     icon: <Wallet className="w-5 h-5 text-green-600" />,
   },
   {
     label: "Merchants",
-    href: "/Merchants",
+    href: "/merchants",
     icon: <Store className="w-5 h-5 text-purple-600" />,
   },
   {
     label: "Portfolio",
-    href: "/Portfolio",
+    href: "/portfolio",
     icon: <TrendingUp className="w-5 h-5 text-blue-600" />,
   },
   {
     label: "Transactions",
-    href: "/Transactions",
+    href: "/transactions",
     icon: <CreditCard className="w-5 h-5 text-orange-600" />,
   },
   {
     label: "Markets",
-    href: "/Markets",
+    href: "/markets",
     icon: <MapPin className="w-5 h-5 text-red-600" />,
   },
   {
     label: "Member Card",
-    href: "/MemberCard",
+    href: "/memberCard",
     icon: <Crown className="w-5 h-5 text-amber-600" />,
   },
   {
     label: "TVM Calculator",
-    href: "/LetsLevelUp",
+    href: "/letsLevelUp",
     icon: <Calculator className="w-5 h-5 text-emerald-600" />,
   },
 ];
@@ -76,17 +76,17 @@ const mainNavLinks: NavLink[] = [
 const businessNavLinks: NavLink[] = [
   {
     label: "Business Dashboard",
-    href: "/BusinessSuite",
+    href: "/businessSuite",
     icon: <Briefcase className="w-5 h-5 text-indigo-600" />,
   },
   {
     label: "Analytics",
-    href: "/BusinessAnalytics",
+    href: "/businessAnalytics",
     icon: <TrendingUp className="w-5 h-5 text-emerald-600" />,
   },
   {
     label: "Feature Your Business",
-    href: "/BusinessAdvertising",
+    href: "/businessAdvertising",
     icon: <Sparkles className="w-5 h-5 text-pink-600" />,
   },
 ];
