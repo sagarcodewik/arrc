@@ -5,10 +5,6 @@ import AnimateSection from "../AnimateSection";
 import Section from "../Section";
 import { Button } from "../ui/Button";
 import {
-  CreditCard,
-  RefreshCw,
-  TrendingUp,
-  Wallet,
   ShoppingBag,
   Fuel,
   Utensils,
@@ -16,14 +12,8 @@ import {
   Plane,
   HeartPulse,
   MoreHorizontal,
-  Activity,
-  BarChart2,
   Tag,
-  SlidersHorizontal,
-  Download,
   ShoppingCart,
-  TagIcon
-  
 } from "lucide-react";
 import { LuDownload, LuTag } from "react-icons/lu";
 import Input from "../ui/Input";
