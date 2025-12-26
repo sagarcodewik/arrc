@@ -173,10 +173,10 @@ const Dashboard = () => {
     setIsOpen(true);
   };
   const handleAskAnotherQuestion = () => {
-    setAnswer("");        
-    setAiError(null);     
-    setQuestion("");     
-    setIsOpen(true);     
+    setAnswer("");
+    setAiError(null);
+    setQuestion("");
+    setIsOpen(true);
   };
   useEffect(() => {
     const loadSpending = async () => {
@@ -245,7 +245,6 @@ const Dashboard = () => {
 
     setLoadingRewards(false);
   };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!question.trim()) return;
@@ -257,18 +256,19 @@ const Dashboard = () => {
 
       const res = await apiPost({
         url: API_GET_FINANCIAL_ADVISOR,
-        values: {
-          question,
-        },
+        values: { question },
       });
-      if (!res?.success) {
-        throw new Error(res?.message || "AI failed");
+
+      console.log("AI RESPONSE ===>", res);
+
+      if (!res || !res.reply) {
+        throw new Error("No AI reply received");
       }
 
-      setAnswer(res.answer);
-    } catch (err) {
-      console.error(err);
-      setAiError("Unable to get AI insights right now.");
+      setAnswer(res.reply);
+    } catch (err: any) {
+      console.error("AI ERROR ===>", err);
+      setAiError(err?.message || "Unable to get AI insights right now.");
     } finally {
       setAiLoading(false);
     }
@@ -295,7 +295,7 @@ const Dashboard = () => {
       label: "Link Account",
       bg: "from-blue-400 to-indigo-400 hover:from-blue-500 hover:to-indigo-500",
       // onClick: handleLinkAccount,
-       onClick: () => router.push("/Accounts"),
+      onClick: () => router.push("/Accounts"),
     },
     {
       icon: Store,
@@ -375,7 +375,6 @@ const Dashboard = () => {
       console.error("Refresh failed", err);
     } finally {
       setIsLoading(false);
-
     }
   };
 
@@ -523,37 +522,39 @@ const Dashboard = () => {
                     )}
                   </Button> */}
                   <Button
-  variant="gradientPurpleBlue"
-  type="submit"
-  disabled={!question.trim() || aiLoading}
-  className="w-full gap-2 shadow-lg flex items-center justify-center"
->
-  {aiLoading ? (
-    <>
-      <Loader2 className="w-4 h-4 animate-spin" />
-      <span>Analyzing...</span>
-    </>
-  ) : (
-    <>
-      <Send className="w-4 h-4" />
-      <span>Get AI Insights</span>
-    </>
-  )}
-</Button>
+                    variant="gradientPurpleBlue"
+                    type="submit"
+                    disabled={!question.trim() || aiLoading}
+                    className="w-full gap-2 shadow-lg flex items-center justify-center"
+                  >
+                    {aiLoading ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        <span>Analyzing...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Send className="w-4 h-4" />
+                        <span>Get AI Insights</span>
+                      </>
+                    )}
+                  </Button>
                 </form>
-                {answer && <FinancialAdvisorAnswer answer={answer} question={question}/>}
+                {answer && (
+                  <FinancialAdvisorAnswer answer={answer} question={question} />
+                )}
                 {aiError && (
                   <div className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-600">
                     {aiError}
                   </div>
                 )}
-                  {answer && (
-                      <div className="flex justify-center pt-2">
-                        <Button
-                          type="button"
-                          variant="outline"
-                          onClick={handleAskAnotherQuestion}
-                         className="
+                {answer && (
+                  <div className="flex justify-center pt-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={handleAskAnotherQuestion}
+                      className="
                             w-full 
                             border border-purple-300 
                             text-purple-700 
@@ -561,11 +562,11 @@ const Dashboard = () => {
                             hover:bg-purple-50 
                             font-medium
                           "
-                        >
-                          Ask Another Question
-                        </Button>
-                      </div>
-                    )}
+                    >
+                      Ask Another Question
+                    </Button>
+                  </div>
+                )}
                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
                   <p className="text-xs text-blue-800">
                     {" "}
@@ -597,8 +598,7 @@ const Dashboard = () => {
                     <p className="text-sm text-slate-500 text-center">
                       Loading rewards...
                     </p>
-                  ) : 
-                  recentRewards.length === 0 ? (
+                  ) : recentRewards.length === 0 ? (
                     <div className="text-center text-slate-500">
                       No rewards yet
                     </div>
@@ -633,57 +633,53 @@ const Dashboard = () => {
                     </div>
                   )}
                 </div>
-              {pagination && pagination.totalPages > 1 && (
-                <div className="p-3 flex items-center justify-center gap-2 border-t border-slate-100">
-
-                  <button
-                    disabled={page === 1}
-                    onClick={() => loadRecentRewards(page - 1)}
-                    className={`px-3 py-1 rounded-md text-sm font-medium transition
+                {pagination && pagination.totalPages > 1 && (
+                  <div className="p-3 flex items-center justify-center gap-2 border-t border-slate-100">
+                    <button
+                      disabled={page === 1}
+                      onClick={() => loadRecentRewards(page - 1)}
+                      className={`px-3 py-1 rounded-md text-sm font-medium transition
                       ${
                         page === 1
                           ? "bg-slate-100 text-slate-400 cursor-not-allowed"
                           : "bg-white text-slate-700 border border-slate-300 hover:bg-slate-100"
                       }
                     `}
-                  >
-                    Prev
-                  </button>
-                  {getPaginationNumbers(
-                    page,
-                    pagination.totalPages,
-                    4
-                  ).map((p) => (
-                    <button
-                      key={p}
-                      onClick={() => loadRecentRewards(p)}
-                      className={`px-3 py-1 rounded-md text-sm font-medium transition
+                    >
+                      Prev
+                    </button>
+                    {getPaginationNumbers(page, pagination.totalPages, 4).map(
+                      (p) => (
+                        <button
+                          key={p}
+                          onClick={() => loadRecentRewards(p)}
+                          className={`px-3 py-1 rounded-md text-sm font-medium transition
                         ${
                           p === page
                             ? "bg-slate-900 text-white"
                             : "bg-white text-slate-700 border border-slate-300 hover:bg-slate-100"
                         }
                       `}
-                    >
-                      {p}
-                    </button>
-                  ))}
-                  <button
-                    disabled={page === pagination.totalPages}
-                    onClick={() => loadRecentRewards(page + 1)}
-                    className={`px-3 py-1 rounded-md text-sm font-medium transition
+                        >
+                          {p}
+                        </button>
+                      )
+                    )}
+                    <button
+                      disabled={page === pagination.totalPages}
+                      onClick={() => loadRecentRewards(page + 1)}
+                      className={`px-3 py-1 rounded-md text-sm font-medium transition
                       ${
                         page === pagination.totalPages
                           ? "bg-slate-100 text-slate-400 cursor-not-allowed"
                           : "bg-white text-slate-700 border border-slate-300 hover:bg-slate-100"
                       }
                     `}
-                  >
-                    Next
-                  </button>
-
-                </div>
-              )}
+                    >
+                      Next
+                    </button>
+                  </div>
+                )}
               </div>
               <div className="grid sm:grid-cols-2 lg:grid-cols-2 gap-4 lg:gap-6">
                 <div className="rounded-2xl border bg-card text-card-foreground bg-gradient-to-br from-white via-white to-amber-50/30 backdrop-blur-sm border-slate-200/50 shadow-xl hover:shadow-2xl transition-all duration-500">
@@ -1032,7 +1028,8 @@ const Dashboard = () => {
                       <p className="text-xs text-slate-400">
                         Based on live market prices
                       </p>
-                    </div>                    {totalValue === 0 && (
+                    </div>{" "}
+                    {totalValue === 0 && (
                       <div className="text-xs text-slate-500">
                         <p>No portfolio data yet.</p>
                       </div>
