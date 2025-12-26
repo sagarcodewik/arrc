@@ -1,4 +1,6 @@
 "use client";
+import React from "react";
+import { useRouter } from "next/navigation";
 
 import {
   ShoppingBag,
@@ -16,12 +18,13 @@ import {
   Shield,
   Heart,
 } from "lucide-react";
+import VisualCard from "./VisualCard";
 
 export default function BusinessAdvertisingPage() {
+    const router = useRouter();
+
   return (
     <div className="bg-white text-slate-900">
-
-      {/* ================= HERO ================= */}
       <section className="relative min-h-screen flex items-center justify-center bg-[radial-gradient(circle_at_center,#0f172a,#020617)] text-white">
         <div className="absolute inset-0 bg-[url('/money-bg.png')] opacity-10" />
         <div className="relative z-10 max-w-5xl mx-auto text-center px-6">
@@ -53,13 +56,14 @@ export default function BusinessAdvertisingPage() {
             </span>
           </div>
 
-          <button className="px-8 py-3 rounded-lg bg-cyan-500 hover:bg-cyan-600 font-semibold transition">
+          <button
+           onClick={() => router.push("/BusinessSuite")} 
+          className="px-8 py-3 rounded-lg bg-cyan-500 hover:bg-cyan-600 font-semibold transition">
             Start Rewarding Customers →
           </button>
         </div>
       </section>
 
-      {/* ================= INDUSTRIES ================= */}
       <section className="py-20 bg-white">
         <div className="max-w-6xl mx-auto px-6 text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
@@ -81,7 +85,6 @@ export default function BusinessAdvertisingPage() {
         </div>
       </section>
 
-      {/* ================= HOW IT WORKS ================= */}
       <section className="py-20 bg-slate-50">
         <div className="max-w-6xl mx-auto px-6 text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
@@ -100,7 +103,6 @@ export default function BusinessAdvertisingPage() {
         </div>
       </section>
 
-      {/* ================= TRANSFORMATION ================= */}
       <section className="py-24 bg-gradient-to-b from-cyan-50 to-white">
         <div className="max-w-6xl mx-auto px-6 text-center">
           <span className="inline-flex items-center gap-2 bg-emerald-100 text-emerald-700 px-4 py-1 rounded-full text-sm mb-4">
@@ -115,11 +117,29 @@ export default function BusinessAdvertisingPage() {
             keep customers coming back.
           </p>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {/* <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <VisualCard title="Seamless Technology" text="Works with existing systems" />
             <VisualCard title="Delighted Customers" text="Customers build wealth effortlessly" />
             <VisualCard title="Everyday Growth" text="Groceries, gas, coffee → investments" />
+          </div> */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <VisualCard
+              title="Seamless Technology"
+              text="Works with existing systems"
+              imageSrc="/images/seamless_technology.jpg"
+            />
+            <VisualCard
+              title="Delighted Customers"
+              text="Customers build wealth effortlessly"
+              imageSrc="/images/delighted_customer.jpg"
+            />
+            <VisualCard
+              title="Everyday Growth"
+              text="Groceries, gas, coffee → investments"
+              imageSrc="/images/every_day_growth.jpg"
+            />
           </div>
+
 
           <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8 bg-white rounded-2xl shadow-lg p-10">
             <Metric value="2-4x" label="Customer Retention Potential" />
@@ -129,7 +149,7 @@ export default function BusinessAdvertisingPage() {
         </div>
       </section>
 
-      {/* ================= WHY CHOOSE ================= */}
+
       <section className="py-24 bg-slate-50">
         <div className="max-w-6xl mx-auto px-6 text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
@@ -153,8 +173,6 @@ export default function BusinessAdvertisingPage() {
   );
 }
 
-/* ================= COMPONENTS ================= */
-
 const Industry = ({ icon, title, stat }: any) => (
   <div className="bg-white rounded-xl shadow p-8 text-center">
     <div className="mx-auto mb-4 w-12 h-12 flex items-center justify-center bg-cyan-100 text-cyan-600 rounded-full">
@@ -175,14 +193,7 @@ const Step = ({ icon, title, text }: any) => (
   </div>
 );
 
-const VisualCard = ({ title, text }: any) => (
-  <div className="rounded-2xl h-64 bg-slate-900 text-white flex items-end p-6 shadow-lg">
-    <div>
-      <h4 className="font-semibold">{title}</h4>
-      <p className="text-sm text-slate-300">{text}</p>
-    </div>
-  </div>
-);
+
 
 const Metric = ({ value, label }: any) => (
   <div>

@@ -47,7 +47,7 @@ export const LoginUser = createAsyncThunk(
 
         if (role === "USER") navigate.push("/");
        
-        // navigate.push("/dashboard");
+        // navigate.push("/Dashboard");
         ShowToast("Login Successfully !!", "success");
       } else {
         dispatch(onLoginFailed());
@@ -62,29 +62,6 @@ export const LoginUser = createAsyncThunk(
   }
 );
 
-// export const getUserProfile = createAsyncThunk(
-//   "getProfile",
-//   async (_, { getState }) => {
-//     try { 
-//       const state: any = getState();
-//       const userId = state.auth.user?.id;
-
-//       if (!userId) throw new Error("User ID not found");
-
-//       const res = await axios.request({
-//         method: "GET",
-//         url: API_GET_PROFILE,
-//         headers: {
-//           Accept: "application/json",
-//         }
-//       });
-//       return res.data;
-//     } catch (err: any) {
-//       ShowToast(err?.response?.data?.error, "error");
-//       return err?.response?.data;
-//     }
-//   }
-// );
 
 export const refreshMe = createAsyncThunk(
   "auth/refreshMe",
@@ -155,10 +132,7 @@ export const changePassword = createAsyncThunk(
         if (res.data?.data?.role) {
 
           const role = res.data.data.role;
-          if (role === "USER" || role === "OWNER") navigate.push("/dashboard");
-          else if (role === "AGENT") navigate.push("/agent/dashboard");
-          else if (role === "SUPPLIER") navigate.push("/supplier/dashboard");
-          else if (role === "PROVIDER") navigate.push("/serviceProvider/dashboard");
+          if (role === "USER" || role === "OWNER") navigate.push("/Dashboard");
         }
       } else {
         ShowToast(res.data.error, "error");

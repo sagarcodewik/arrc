@@ -128,7 +128,7 @@ const LoginPage = () => {
                       }
 
 
-                      router.push("/dashboard");
+                      router.push("/Dashboard");
                     } catch (error) {
                       ShowToast("Network error. Please try again.", "error");
                     } finally {

@@ -65,3 +65,116 @@ hr {margin: 0; border: 0; height: 1px; background-color: currentColor; opacity: 
 .animate-fade {
   animation: fadeText 1.4s ease-in-out infinite;
 }
+
+
+/* ===============================
+   ARR – TVM PAGE THEME
+================================ */
+:root {
+  --arr-border: #dbeafe;
+  --arr-muted: #64748b;
+  --arr-text: #0f172a;
+}
+
+.arr-bg {
+  background: linear-gradient(
+    to bottom,
+    rgba(240, 245, 248, 0.96),
+    rgba(255, 255, 255, 0.98)
+  );
+}
+
+.arr-hero-wrap {
+  position: relative;
+  padding-top: 60px;
+}
+
+.arr-hero-glow {
+  position: absolute;
+  top: -40px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 700px;
+  height: 260px;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(56, 189, 248, 0.35),
+    rgba(56, 189, 248, 0.12),
+    transparent 70%
+  );
+  filter: blur(60px);
+  z-index: 0;
+}
+
+.arr-title {
+  font-family: "Playfair Display", serif;
+  color: var(--arr-text);
+}
+
+.arr-muted {
+  color: var(--arr-muted);
+}
+
+.arr-main-card {
+  border-radius: 20px;
+  background: #ffffff;
+  border: 1px solid var(--arr-border);
+  box-shadow: 0 28px 80px rgba(15, 23, 42, 0.12);
+}
+
+.arr-result-card {
+  background: #ffffff;
+  border: 1px solid #dbeafe;
+  border-radius: 14px;
+  padding: 20px;
+  box-shadow: 0 14px 40px rgba(15, 23, 42, 0.08);
+}
+
+.arr-value {
+  font-size: 34px;
+  font-weight: 700;
+}
+
+.arr-helper {
+  font-size: 12px;
+  color: var(--arr-muted);
+}
+
+
+
+/* ---------------------------
+   BUSINESS DASHBOARD UI
+--------------------------- */
+
+.arr-dashboard-bg {
+  background:
+    linear-gradient(
+      to bottom,
+      rgba(240, 245, 248, 0.92),
+      rgba(255, 255, 255, 0.96)
+    ),
+    url("/money-bg.png");
+  background-size: cover;
+  background-position: center;
+}
+
+.arr-kpi-card {
+  @apply bg-white rounded-lg border border-gray-200 p-6 shadow-md;
+}
+
+.arr-section-title {
+  @apply text-xl font-semibold text-gray-800 mb-4;
+}
+
+/* Sidebar styles */
+.arr-sidebar {
+  @apply fixed inset-y-0 left-0 w-64 bg-white shadow-lg border-r border-gray-200;
+}
+.arr-sidebar a {
+  @apply flex items-center gap-2 px-4 py-2 text-gray-700 rounded hover:bg-gray-100;
+}
+
+/* Top nav */
+.arr-top-nav {
+  @apply flex items-center justify-between px-8 py-4 bg-white border-b border-gray-200;
+}
