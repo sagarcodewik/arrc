@@ -8,19 +8,18 @@ import { usePathname } from "next/navigation";
 import { useSelector } from "react-redux";
 
 const ROUTE_TITLES: Record<string, string> = {
-  "/Dashboard": "Dashboard",
-  "/Accounts": "Accounts",
-  "/Analytics": "BusinessAnalytics",
-  "/BusinessSuite": "BusinessSuite",
-  "/BusinessAdvertising": "BusinessAdvertising",
-  "/Markets": "Markets",
-  "/MemberCard": "Member Card",
-  "/Merchants": "Merchants",
-  "/Portfolio": "Portfolio",
-  "/Transactions": "Transactions",
-  "/LetsLevelUp": "LetsLevelUp",
+  "/dashboard": "Dashboard",
+  "/accounts": "Accounts",
+  "/business-analytics": "BusinessAnalytics",
+  "/business-suite": "BusinessSuite",
+  "/business-advertising": "BusinessAdvertising",
+  "/markets": "Markets",
+  "/member-card": "MemberCard",
+  "/merchants": "Merchants",
+  "/portfolio": "Portfolio",
+  "/transactions": "Transactions",
+  "/lets-level-up": "LetsLevelUp",
 };
-
 
 export default function Header({ onMenuClick }: { onMenuClick: () => void }) {
   const [notifOpen, setNotifOpen] = useState(false);
@@ -31,10 +30,17 @@ export default function Header({ onMenuClick }: { onMenuClick: () => void }) {
   const [profileLoading, setProfileLoading] = useState(true);
   const pathname = usePathname();
   const email = useSelector((state: any) => state.auth?.user?.email);
+
+  const getReadableTitle = (path: string) => {
+    return path
+      .replace("/", "")
+      .split("-")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
+  };
   const pageKey = "/" + pathname.split("/").filter(Boolean)[0];
 
-  const pageTitle =
-    ROUTE_TITLES[pageKey] || pageKey.replace("/", "").replace(/-/g, " ");
+  const pageTitle = ROUTE_TITLES[pageKey] ?? getReadableTitle(pageKey);
 
   const loadProfile = async () => {
     try {
@@ -56,6 +62,7 @@ export default function Header({ onMenuClick }: { onMenuClick: () => void }) {
   useEffect(() => {
     loadProfile();
   }, []);
+
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
       if (

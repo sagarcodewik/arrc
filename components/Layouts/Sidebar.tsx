@@ -33,60 +33,60 @@ type NavLink = {
 const mainNavLinks: NavLink[] = [
   {
     label: "Dashboard",
-    href: "/Dashboard",
+    href: "/dashboard",
     icon: <House className="w-5 h-5 text-cyan-600" />,
   },
   {
     label: "Accounts",
-    href: "/Accounts",
+    href: "/accounts",
     icon: <Wallet className="w-5 h-5 text-green-600" />,
   },
   {
     label: "Merchants",
-    href: "/Merchants",
+    href: "/merchants",
     icon: <Store className="w-5 h-5 text-purple-600" />,
   },
   {
     label: "Portfolio",
-    href: "/Portfolio",
+    href: "/portfolio",
     icon: <TrendingUp className="w-5 h-5 text-blue-600" />,
   },
   {
     label: "Transactions",
-    href: "/Transactions",
+    href: "/transactions",
     icon: <CreditCard className="w-5 h-5 text-orange-600" />,
   },
   {
     label: "Markets",
-    href: "/Markets",
+    href: "/markets",
     icon: <MapPin className="w-5 h-5 text-red-600" />,
   },
   {
     label: "Member Card",
-    href: "/MemberCard",
+    href: "/member-card",
     icon: <Crown className="w-5 h-5 text-amber-600" />,
   },
   {
     label: "TVM Calculator",
-    href: "/LetsLevelUp",
+    href: "/lets-level-up",
     icon: <Calculator className="w-5 h-5 text-emerald-600" />,
   },
 ];
 
 const businessNavLinks: NavLink[] = [
-  {
-    label: "Business Dashboard",
-    href: "/BusinessSuite",
-    icon: <Briefcase className="w-5 h-5 text-indigo-600" />,
-  },
-  {
-    label: "Analytics",
-    href: "/BusinessAnalytics",
-    icon: <TrendingUp className="w-5 h-5 text-emerald-600" />,
-  },
+  // {
+  //   label: "Business Dashboard",
+  //   href: "/business-suite",
+  //   icon: <Briefcase className="w-5 h-5 text-indigo-600" />,
+  // },
+  // {
+  //   label: "Analytics",
+  //   href: "/business-analytics",
+  //   icon: <TrendingUp className="w-5 h-5 text-emerald-600" />,
+  // },
   {
     label: "Feature Your Business",
-    href: "/BusinessAdvertising",
+    href: "/business-advertising",
     icon: <Sparkles className="w-5 h-5 text-pink-600" />,
   },
 ];
@@ -254,7 +254,7 @@ function SidebarContent({ onClose }: { onClose?: () => void }) {
       <ul className="mt-auto border-t border-gray-100 p-4 space-y-1">
         <li>
           <Link
-            href="/About"
+            href="/about"
             className="group bg-white flex items-center gap-2 rounded-xl p-2 text-sm font-medium transition-all duration-200 hover:bg-slate-100"
           >
             <CircleHelp className="w-5 h-5 text-gray-600" />

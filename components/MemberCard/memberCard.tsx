@@ -103,7 +103,7 @@ const MemberCardPage = () => {
                   size="default"
                   rounded="lg"
                   type="button"
-                  onClick={() => router.push("/Accounts")}
+                  onClick={() => router.push("/accounts")}
                   className="inline-flex items-center justify-center gap-2 rounded-md text-sm font-medium h-10 px-4 py-2 bg-slate-900 text-white hover:bg-slate-800 transition-colors w-full sm:w-auto"
                 >
                   <CreditCard className="w-4 h-4" />

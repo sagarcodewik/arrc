@@ -128,7 +128,7 @@ const LoginPage = () => {
                       }
 
 
-                      router.push("/Dashboard");
+                      router.push("/dashboard");
                     } catch (error) {
                       ShowToast("Network error. Please try again.", "error");
                     } finally {
@@ -156,20 +156,6 @@ const LoginPage = () => {
                         {errors.email && touched.email && (
                           <p className="text-xs text-red-500">{errors.email}</p>
                         )}
-
-                        {/* <Input
-                          label="Password"
-                          type="password"
-                          name="password"
-                          value={values.password}
-                          onChange={handleChange}
-                          leftIcon={<MdOutlineLock size={20} />}
-                        />
-                        {errors.password && touched.password && (
-                          <p className="text-xs text-red-500">
-                            {errors.password}
-                          </p>
-                        )} */}
                     <div className="relative">
                           <Input
                             label="Password"
@@ -178,6 +164,7 @@ const LoginPage = () => {
                             value={values.password}
                             onChange={handleChange}
                             leftIcon={<MdOutlineLock size={20} />}
+                            
                           />
 
                           <button
@@ -240,7 +227,7 @@ const LoginPage = () => {
         <div className="space-y-4">
           {showFirst ? (
             <>
-              <h3 className="text-xl font-bold text-black">Reset Your Password</h3>
+              <h3 className="text-xl font-bold text-black text-slate-800">Reset Your Password</h3>
               <Input label="Email Address" type="email" leftIcon={<FiMail />} />
             </>
           ) : (

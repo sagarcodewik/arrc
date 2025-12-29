@@ -16,6 +16,7 @@ import {
 
 import { apiPost, getApiWithOutQuery } from "@/utils/endpoints/common";
 import { useDispatch } from "react-redux";
+import ShowToast from "../Common/ShowToast";
 
 export default function AccountsPage() {
   const dispatch = useDispatch();
@@ -88,21 +89,53 @@ export default function AccountsPage() {
     () => ({
       token: plaidToken,
       product: ["auth", "transactions"],
-      onSuccess: async (public_token: string) => {
-        try {
-          // dispatch(showLoader());
+      // onSuccess: async (public_token: string) => {
+      //   try {
+      //     // dispatch(showLoader());
 
-          await apiPost({
-            url: API_PLAID_EXCHANGE_TOKEN,
-            values: { public_token },
-          });
+      //     await apiPost({
+      //       url: API_PLAID_EXCHANGE_TOKEN,
+      //       values: { public_token },
+      //     });
 
-          await loadAccounts();
-          setOpenPlaid(false);
-        } finally {
-          // dispatch(hideLoader());
-        }
-      },
+      //     await loadAccounts();
+      //     setOpenPlaid(false);
+      //   } finally {
+      //     // dispatch(hideLoader());
+      //   }
+      // },
+onSuccess: async (public_token: string) => {
+  try {
+    const res = await apiPost({
+      url: API_PLAID_EXCHANGE_TOKEN,
+      values: { public_token },
+    });
+
+    // ❌ backend ne error diya but apiPost ne throw nahi kiya
+    if (res?.success === false) {
+      ShowToast(res?.error || "Failed to connect bank account", "error");
+      setOpenPlaid(false);
+      return;
+    }
+
+    // ✅ success flow
+    ShowToast("Bank account connected successfully", "success");
+    await loadAccounts();
+    setOpenPlaid(false);
+
+  } catch (err: any) {
+    console.error("PLAID LINK ERROR:", err);
+
+    const message =
+      err?.response?.data?.error ||
+      err?.message ||
+      "Failed to connect bank account";
+
+    ShowToast(message, "error");
+    setOpenPlaid(false);
+  }
+},
+
       onExit: () => setOpenPlaid(false),
     }),
     [plaidToken]

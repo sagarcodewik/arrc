@@ -3,7 +3,13 @@ import { useEffect, useState } from "react";
 import AnimateSection from "../AnimateSection";
 import Section from "../Section";
 import { Button } from "../ui/Button";
-import { CreditCard, RefreshCw, TrendingUp, Wallet } from "lucide-react";
+import {
+  CreditCard,
+  RefreshCw,
+  TrendingUp,
+  TrendingDown,
+  Wallet,
+} from "lucide-react";
 import { HiArrowTrendingUp } from "react-icons/hi2";
 import { LuLayers } from "react-icons/lu";
 import { useDispatch } from "react-redux";
@@ -15,7 +21,6 @@ import { useMemo } from "react";
 import { useRef } from "react";
 import HoldingsPerformanceChart from "@/components/HoldingsPerformanceChart";
 import AssetDistributionChart from "@/components/AssetDistributionChart";
-
 
 type StatItem = {
   title: string;
@@ -36,28 +41,6 @@ const PortfolioPage = () => {
   const [data, setData] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const isFirstLoad = useRef(true);
-  // const [accounts, setAccounts] = useState<any[]>([]);
-  // console.log("accounts============>", accounts);
-  // useEffect(() => {
-  //   loadAccounts();
-  // }, []);
-  // const loadAccounts = async () => {
-  //   try {
-  //     const res = await getApiWithOutQuery({
-  //       url: API_PLAID_ACCOUNTS,
-  //     });
-
-  //     setAccounts(res?.data || []);
-  //   } catch (error) {
-  //     console.error("Failed to load accounts", error);
-  //     setAccounts([]);
-  //   } finally {
-  //   }
-  // };
-  // const accountCount = useMemo(
-  //   () => accounts.filter((a) => a.account_id).length,
-  //   [accounts]
-  // );
 
   useEffect(() => {
     if (isFirstLoad.current) {
@@ -115,7 +98,6 @@ const PortfolioPage = () => {
       item.assetName && item.assetName !== "Unknown" && item.investedAmount > 0
   );
 
- console.log("assets=============>",assets)
   const totalInvested = assets.reduce((s, a) => s + (a.investedAmount || 0), 0);
 
   const totalValue = assets.reduce(
@@ -140,8 +122,15 @@ const PortfolioPage = () => {
       value: `$${Math.abs(profitLoss).toFixed(2)}`,
       subLabel: `${Math.abs(profitLossPercent).toFixed(2)}%`,
       isProfit: profitLoss >= 0,
-      icon: <TrendingUp size={20} className="text-white" />,
-      iconBg: "bg-green-500",
+
+      icon:
+        profitLoss >= 0 ? (
+          <TrendingUp size={20} className="text-white" />
+        ) : (
+          <TrendingDown size={20} className="text-white" />
+        ),
+
+      iconBg: profitLoss >= 0 ? "bg-green-500" : "bg-red-500",
     },
     {
       title: "Holdings",
@@ -150,6 +139,7 @@ const PortfolioPage = () => {
       iconBg: "bg-purple-500",
     },
   ];
+
   return (
     <>
       <AnimateSection>
@@ -244,7 +234,7 @@ const PortfolioPage = () => {
                     Holdings Performance
                   </h3>
                 </div>
-               <div className="flex-1 flex items-center justify-center px-4 min-h-48 lg:min-h-64">
+                <div className="flex-1 flex items-center justify-center px-4 min-h-48 lg:min-h-64">
                   <HoldingsPerformanceChart assets={assets} />
                 </div>
               </div>
@@ -257,7 +247,7 @@ const PortfolioPage = () => {
                     Asset Distribution
                   </h3>
                 </div>
-               <div className="flex-1 flex items-center justify-center px-4 min-h-48 lg:min-h-64">
+                <div className="flex-1 flex items-center justify-center px-4 min-h-48 lg:min-h-64">
                   <AssetDistributionChart assets={assets} />
                 </div>
               </div>

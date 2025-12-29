@@ -282,35 +282,32 @@ const Dashboard = () => {
 
     return () => clearTimeout(timer);
   }, [dispatch]);
-
-  const actions = [
-    {
-      icon: QrCode,
-      label: "My QR Code",
-      bg: "from-emerald-400 to-teal-400 hover:from-emerald-500 hover:to-teal-500",
-      onClick: () => router.push("/MemberCard"),
-    },
-    {
-      icon: CreditCard,
-      label: "Link Account",
-      bg: "from-blue-400 to-indigo-400 hover:from-blue-500 hover:to-indigo-500",
-      // onClick: handleLinkAccount,
-      onClick: () => router.push("/Accounts"),
-    },
-    {
-      icon: Store,
-      label: "Find Merchants",
-      bg: "from-purple-400 to-pink-400 hover:from-purple-500 hover:to-pink-500",
-      onClick: () => router.push("/Merchants"),
-    },
-    {
-      icon: TrendingUp,
-      label: "View Portfolio",
-      bg: "from-amber-400 to-orange-400 hover:from-amber-500 hover:to-orange-500",
-
-      onClick: () => router.push("/Portfolio"),
-    },
-  ];
+const actions = [
+  {
+    icon: QrCode,
+    label: "My QR Code",
+    bg: "from-emerald-400 to-teal-400 hover:from-emerald-500 hover:to-teal-500",
+    onClick: () => router.push("/member-card"),
+  },
+  {
+    icon: CreditCard,
+    label: "Link Account",
+    bg: "from-blue-400 to-indigo-400 hover:from-blue-500 hover:to-indigo-500",
+    onClick: () => router.push("/accounts"),
+  },
+  {
+    icon: Store,
+    label: "Find Merchants",
+    bg: "from-purple-400 to-pink-400 hover:from-purple-500 hover:to-pink-500",
+    onClick: () => router.push("/merchants"),
+  },
+  {
+    icon: TrendingUp,
+    label: "View Portfolio",
+    bg: "from-amber-400 to-orange-400 hover:from-amber-500 hover:to-orange-500",
+    onClick: () => router.push("/portfolio"),
+  },
+];
 
   const stats: StatItem[] = [
     {

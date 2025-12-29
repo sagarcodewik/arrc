@@ -6,29 +6,18 @@ type VisualCardProps = {
   imageSrc: string;
 };
 
-export default function VisualCard({
-  title,
-  text,
-  imageSrc,
-}: VisualCardProps) {
+export default function VisualCard({ title, text, imageSrc }: VisualCardProps) {
   return (
-    <div className="bg-[#0B132B] rounded-2xl shadow-lg overflow-hidden min-h-[260px] flex flex-col">
-      
-      {/* IMAGE AREA */}
-      <div className="relative h-36 w-full">
-        <Image
-          src={imageSrc}
-          alt={title}
-          fill
-          className="object-contain p-6"
-          priority
-        />
-      </div>
-
-      {/* TEXT AREA */}
-      <div className="p-6 mt-auto">
-        <h3 className="text-white font-semibold text-lg">{title}</h3>
-        <p className="text-slate-300 text-sm mt-1">{text}</p>
+    <div className="relative group rounded-2xl overflow-hidden shadow-xl h-[420px]">
+      <img
+        src={imageSrc}
+        alt={title}
+        className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+      />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+      <div className="relative z-10 h-full flex flex-col justify-end p-6 text-white">
+        <h3 className="text-xl font-bold mb-2">{title}</h3>
+        <p className="text-sm text-white/90 leading-relaxed">{text}</p>
       </div>
     </div>
   );

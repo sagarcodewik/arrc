@@ -16,51 +16,72 @@ export default function TradingViewTicker() {
 
     script.innerHTML = JSON.stringify({
       symbols: [
-        // ===== BIG TECH =====
-        { proName: "NASDAQ:AAPL", title: "Apple" },
-        { proName: "NASDAQ:MSFT", title: "Microsoft" },
-        { proName: "NASDAQ:GOOGL", title: "Alphabet" },
-        { proName: "NASDAQ:AMZN", title: "Amazon" },
-        { proName: "NASDAQ:NVDA", title: "NVIDIA" },
-        { proName: "NASDAQ:META", title: "Meta" },
-        { proName: "NASDAQ:TSLA", title: "Tesla" },
-        { proName: "NASDAQ:INTC", title: "Intel" },
-        { proName: "NASDAQ:AMD", title: "AMD" },
-
-        // ===== FINANCE =====
-        { proName: "NYSE:JPM", title: "JPMorgan" },
-        { proName: "NYSE:GS", title: "Goldman Sachs" },
-        { proName: "NYSE:BAC", title: "Bank of America" },
-        { proName: "NYSE:V", title: "Visa" },
-        { proName: "NYSE:MA", title: "Mastercard" },
-
-        // ===== CONSUMER =====
-        { proName: "NYSE:WMT", title: "Walmart" },
-        { proName: "NYSE:COST", title: "Costco" },
-        { proName: "NYSE:NKE", title: "Nike" },
-        { proName: "NYSE:DIS", title: "Disney" },
-
-        // ===== ENERGY =====
-        { proName: "NYSE:XOM", title: "Exxon" },
-        { proName: "NYSE:CVX", title: "Chevron" },
-
-        // ===== HEALTHCARE =====
-        { proName: "NYSE:JNJ", title: "Johnson & Johnson" },
-        { proName: "NYSE:PFE", title: "Pfizer" },
-        { proName: "NYSE:MRK", title: "Merck" },
-
-        // ===== INDICES =====
-        { proName: "SP:SPX", title: "S&P 500" },
-        { proName: "DJ:DJI", title: "Dow Jones" },
-        { proName: "NASDAQ:NDX", title: "Nasdaq 100" },
-
-        // ===== ETFs =====
-        { proName: "AMEX:SPY", title: "SPY ETF" },
-        { proName: "AMEX:QQQ", title: "QQQ ETF" },
-        { proName: "AMEX:DIA", title: "Dow ETF" },
-
-        // ===== ADD 50–100 SAME WAY =====
-      ],
+          // Mega Cap Tech
+          { description: "Apple", proName: "NASDAQ:AAPL" },
+          { description: "Microsoft", proName: "NASDAQ:MSFT" },
+          { description: "Alphabet", proName: "NASDAQ:GOOGL" },
+          { description: "Amazon", proName: "NASDAQ:AMZN" },
+          { description: "NVIDIA", proName: "NASDAQ:NVDA" },
+          { description: "Meta", proName: "NASDAQ:META" },
+          { description: "Tesla", proName: "NASDAQ:TSLA" },
+          { description: "Berkshire", proName: "NYSE:BRK.B" },
+          
+          // Top Financial
+          { description: "JPMorgan", proName: "NYSE:JPM" },
+          { description: "Visa", proName: "NYSE:V" },
+          { description: "Mastercard", proName: "NYSE:MA" },
+          { description: "Bank of America", proName: "NYSE:BAC" },
+          { description: "Wells Fargo", proName: "NYSE:WFC" },
+          
+          // Healthcare Leaders
+          { description: "UnitedHealth", proName: "NYSE:UNH" },
+          { description: "Johnson & Johnson", proName: "NYSE:JNJ" },
+          { description: "Eli Lilly", proName: "NYSE:LLY" },
+          { description: "Pfizer", proName: "NYSE:PFE" },
+          
+          // Consumer & Retail
+          { description: "Walmart", proName: "NYSE:WMT" },
+          { description: "Home Depot", proName: "NYSE:HD" },
+          { description: "Coca-Cola", proName: "NYSE:KO" },
+          { description: "PepsiCo", proName: "NASDAQ:PEP" },
+          { description: "Costco", proName: "NASDAQ:COST" },
+          { description: "Nike", proName: "NYSE:NKE" },
+          { description: "McDonald's", proName: "NYSE:MCD" },
+          { description: "Starbucks", proName: "NASDAQ:SBUX" },
+          
+          // Tech & Semiconductors
+          { description: "AMD", proName: "NASDAQ:AMD" },
+          { description: "Intel", proName: "NASDAQ:INTC" },
+          { description: "Qualcomm", proName: "NASDAQ:QCOM" },
+          { description: "Broadcom", proName: "NASDAQ:AVGO" },
+          { description: "Oracle", proName: "NYSE:ORCL" },
+          { description: "Salesforce", proName: "NYSE:CRM" },
+          { description: "Adobe", proName: "NASDAQ:ADBE" },
+          { description: "Netflix", proName: "NASDAQ:NFLX" },
+          
+          // Energy
+          { description: "Exxon Mobil", proName: "NYSE:XOM" },
+          { description: "Chevron", proName: "NYSE:CVX" },
+          { description: "ConocoPhillips", proName: "NYSE:COP" },
+          
+          // Industrial
+          { description: "Boeing", proName: "NYSE:BA" },
+          { description: "Caterpillar", proName: "NYSE:CAT" },
+          { description: "3M", proName: "NYSE:MMM" },
+          { description: "UPS", proName: "NYSE:UPS" },
+          
+          // More S&P 500 Companies
+          { description: "Disney", proName: "NYSE:DIS" },
+          { description: "Comcast", proName: "NASDAQ:CMCSA" },
+          { description: "Verizon", proName: "NYSE:VZ" },
+          { description: "AT&T", proName: "NYSE:T" },
+          { description: "Cisco", proName: "NASDAQ:CSCO" },
+          { description: "IBM", proName: "NYSE:IBM" },
+          { description: "GE", proName: "NYSE:GE" },
+          { description: "Goldman Sachs", proName: "NYSE:GS" },
+          { description: "Morgan Stanley", proName: "NYSE:MS" },
+          { description: "American Express", proName: "NYSE:AXP" }
+        ],
 
       showSymbolLogo: true,
       isTransparent: true,

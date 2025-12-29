@@ -141,7 +141,7 @@ export default function SignupPage() {
 
       ShowToast("OTP verified successfully", "success");
       setOtpModalOpen(false);
-      router.push("/Dashboard");
+      router.push("/dashboard");
     } catch {
       ShowToast("Network error", "error");
     } finally {
@@ -243,8 +243,6 @@ export default function SignupPage() {
                     onChange={handleChange}
                     leftIcon={<FiMail size={18} />}
                   />
-
-                  {/* PASSWORD */}
                   <div className="relative">
                     <Input
                       label="Password"
