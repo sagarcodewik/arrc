@@ -279,7 +279,7 @@ export default function BusinessAdvertisingPage() {
         </div>
       </section>
 
-      <section className="py-24 bg-gradient-to-b from-cyan-50 to-white">
+      {/* <section className="py-24 bg-gradient-to-b from-cyan-50 to-white"> */}
         <div className="max-w-6xl mx-auto px-6 text-center">
           <span className="inline-flex items-center gap-2 bg-emerald-100 text-emerald-700 px-4 py-1 rounded-full text-sm mb-4">
             ✓ Real Results, Real Impact
@@ -354,7 +354,7 @@ export default function BusinessAdvertisingPage() {
             </div>
           </div>
         </div>
-      </section>
+      {/* </section> */}
 
       <section className="py-24 bg-slate-50">
         <div className="py-16 lg:py-20 bg-white">

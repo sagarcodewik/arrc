@@ -4,6 +4,7 @@ import React from "react";
 import { motion } from "framer-motion";
 import Logo from "@/components/Logo";
 import { ExternalLink } from "lucide-react";
+import { Button } from "../ui/Button";
 
 const About: React.FC = () => {
   return (
@@ -32,7 +33,7 @@ const About: React.FC = () => {
           </p>
         </motion.div>
       </section>
-      <section className="py-20 px-4">
+      <section className="py-10 px-4">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -51,7 +52,7 @@ const About: React.FC = () => {
           </div>
         </motion.div>
       </section>
-      <section className="py-20 px-4 text-white">
+      <section className="py-10 px-4 text-white">
         <div className="max-w-6xl mx-auto text-center space-y-10">
           <h2 className="text-2xl md:text-3xl font-semibold">
             Learn more at www.arrcinvest.com
@@ -70,33 +71,24 @@ const About: React.FC = () => {
               Discover the complete ARRC experience and learn how we&apos;re
               transforming the future of rewards and investing.
             </p>
-            <button
-              onClick={() =>
-                window.open("https://www.arrcinvest.com", "_blank")
-              }
-              className="inline-flex items-center gap-2 px-8 py-3 rounded-lg bg-cyan-500 hover:bg-cyan-600 transition font-medium shadow-lg"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="w-5 h-5"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth={2}
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M14 3h7m0 0v7m0-7L10 14"
-                />
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M5 5v14a2 2 0 002 2h14"
-                />
-              </svg>
-              Visit www.arrcinvest.com
-            </button>
+          <Button
+            onClick={() => window.open("https://www.arrcinvest.com", "_blank")}
+            className="
+              h-9
+              px-4
+              bg-gradient-to-r from-cyan-500 to-sky-500
+              hover:from-cyan-600 hover:to-sky-600
+              text-white
+              text-sm
+              font-medium
+              rounded-md
+              shadow-md shadow-cyan-500/20
+              flex items-center justify-center gap-2
+            "
+          >
+            <ExternalLink className="w-4 h-4" />
+            <span>Visit www.arrcinvest.com</span>
+          </Button>
           </div>
         </div>
       </section>
