@@ -64,7 +64,7 @@ export default function SignupPage() {
 
   const [otpModalOpen, setOtpModalOpen] = useState(false);
   const [registeredEmail, setRegisteredEmail] = useState("");
-  const [otp, setOtp] = useState<string[]>(["", "", "", ""]);
+  const [otp, setOtp] = useState<string[]>(["", "", "", "", "", ""]);
   const [otpLoading, setOtpLoading] = useState(false);
   const [resendLoading, setResendLoading] = useState(false);
   const [timer, setTimer] = useState(60);
@@ -83,21 +83,22 @@ export default function SignupPage() {
   const handleOtpChange = (index: number, value: string) => {
     const clean = value.replace(/\D/g, "");
 
-    if (clean.length === 4) {
-      setOtp(clean.split("").slice(0, 4));
-      inputRefs.current[3]?.focus();
-      return;
-    }
+    if (clean.length === 6) {
+        setOtp(clean.split("").slice(0, 6));
+        inputRefs.current[5]?.focus();
+        return;
+      }
 
-    if (clean.length > 1) return;
+      if (clean.length > 1) return;
 
-    const newOtp = [...otp];
-    newOtp[index] = clean;
-    setOtp(newOtp);
+      const newOtp = [...otp];
+      newOtp[index] = clean;
+      setOtp(newOtp);
 
-    if (clean && index < 3) {
-      inputRefs.current[index + 1]?.focus();
-    }
+      if (clean && index < 5) {
+        inputRefs.current[index + 1]?.focus();
+      }
+
   };
 
   const handleKeyDown = (
@@ -114,10 +115,10 @@ export default function SignupPage() {
 
     const finalOtp = Number(otp.join(""));
 
-    if (!finalOtp || otp.join("").length !== 4) {
-      ShowToast("Enter valid 4 digit OTP", "error");
-      return;
-    }
+    if (!finalOtp || otp.join("").length !== 6) {
+        ShowToast("Enter valid 6 digit OTP", "error");
+        return;
+      }
 
     try {
       setOtpLoading(true);
@@ -164,7 +165,7 @@ export default function SignupPage() {
 
       ShowToast("OTP resent successfully", "success");
       setTimer(60);
-      setOtp(["", "", "", ""]);
+       setOtp(["", "", "", "", "", ""]);
       inputRefs.current[0]?.focus();
     } catch {
       ShowToast("Network error", "error");
@@ -207,7 +208,7 @@ export default function SignupPage() {
                 }
 
                 setRegisteredEmail(values.email);
-                setOtp(["", "", "", ""]);
+                setOtp(["", "", "", "", "", ""]);
                 setTimer(60);
                 setOtpModalOpen(true);
 
