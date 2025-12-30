@@ -279,20 +279,19 @@ export default function BusinessAdvertisingPage() {
         </div>
       </section>
 
-      {/* <section className="py-24 bg-gradient-to-b from-cyan-50 to-white"> */}
+      <section className="relative py-32 bg-gradient-to-b from-cyan-50 via-sky-50/70 to-white overflow-hidden">
         <div className="max-w-6xl mx-auto px-6 text-center">
-          <span className="inline-flex items-center gap-2 bg-emerald-100 text-emerald-700 px-4 py-1 rounded-full text-sm mb-4">
+          <span className="inline-flex items-center gap-2 rounded-full border border-emerald-300 bg-emerald-100 px-6 py-3 text-sm font-semibold text-emerald-800 shadow-sm mb-6">
             ✓ Real Results, Real Impact
           </span>
-
-          <h2 className="text-3xl lg:text-5xl font-bold text-slate-900 mb-6">
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-slate-900 mb-6">
             See ARRC Transform Customer Experiences
           </h2>
-          <p className="text-xl text-slate-600 max-w-3xl mx-auto">
+          <p className="text-lg md:text-xl text-slate-600 max-w-3xl mx-auto">
             Everyday purchases become powerful investment opportunities that
             keep customers coming back.
           </p>
-          <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="mt-20 grid grid-cols-1 md:grid-cols-3 gap-10">
             <VisualCard
               title="Seamless Technology"
               text="Cutting-edge payment integration that works with your existing systems"
@@ -305,21 +304,30 @@ export default function BusinessAdvertisingPage() {
             />
             <VisualCard
               title="Everyday Growth"
-              text="Groceries, gas, coffee - every purchase becomes an investment in their future"
+              text="Groceries, gas, coffee — every purchase becomes an investment in their future"
               imageSrc="/images/every_day_growth.jpg"
             />
           </div>
 
-          <div className="bg-white rounded-3xl p-8 lg:p-12 shadow-xl">
-            <div className="mb-6 text-center">
-              <p className="text-sm text-slate-500 italic">
-                * Projected benefits based on loyalty program industry research
-              </p>
-            </div>
-            <div className="grid md:grid-cols-3 gap-8 text-center">
+          <div
+            className="
+            relative
+            mt-24
+            bg-white/90
+            backdrop-blur-xl
+            rounded-3xl
+            p-10 md:p-14
+            shadow-[0_30px_80px_-20px_rgba(2,132,199,0.35)]
+          "
+          >
+            <p className="text-sm text-slate-500 italic text-center mb-10">
+              * Projected benefits based on loyalty program industry research
+            </p>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-10 text-center">
               <div className="space-y-3">
                 <div className="text-5xl lg:text-6xl font-bold bg-gradient-to-r from-cyan-600 to-sky-600 bg-clip-text text-transparent">
-                  2-4x
+                  2–4x
                 </div>
                 <div className="text-lg font-semibold text-slate-900">
                   Customer Retention Potential
@@ -331,7 +339,7 @@ export default function BusinessAdvertisingPage() {
               </div>
               <div className="space-y-3">
                 <div className="text-5xl lg:text-6xl font-bold bg-gradient-to-r from-emerald-600 to-green-600 bg-clip-text text-transparent">
-                  50-80%
+                  50–80%
                 </div>
                 <div className="text-lg font-semibold text-slate-900">
                   Purchase Frequency Potential
@@ -342,7 +350,7 @@ export default function BusinessAdvertisingPage() {
               </div>
               <div className="space-y-3">
                 <div className="text-5xl lg:text-6xl font-bold bg-gradient-to-r from-amber-600 to-orange-600 bg-clip-text text-transparent">
-                  15-30%
+                  15–30%
                 </div>
                 <div className="text-lg font-semibold text-slate-900">
                   AOV Increase Potential
@@ -354,76 +362,74 @@ export default function BusinessAdvertisingPage() {
             </div>
           </div>
         </div>
-      {/* </section> */}
+      </section>
 
-      <section className="py-24 bg-slate-50">
-        <div className="py-16 lg:py-20 bg-white">
-          <div className="max-w-7xl mx-auto px-4">
-            <div className="text-center mb-16">
-              <h2 className="text-3xl lg:text-5xl font-bold text-slate-900 mb-6">
-                How ARRC Works for Your Business
-              </h2>
-              <p className="text-xl text-slate-600 max-w-3xl mx-auto">
-                Simple integration, powerful results. Get started in minutes,
-                not months.
-              </p>
-            </div>
+      <section className="py-16 lg:py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl lg:text-5xl font-bold text-slate-900 mb-6">
+              How ARRC Works for Your Business
+            </h2>
+            <p className="text-xl text-slate-600 max-w-3xl mx-auto">
+              Simple integration, powerful results. Get started in minutes, not
+              months.
+            </p>
+          </div>
 
-            <div className="grid lg:grid-cols-4 gap-8">
-              {[
-                {
-                  step: "1",
-                  title: "Quick Setup",
-                  description:
-                    "Integrate ARRC into your POS system or e-commerce platform in under an hour.",
-                  icon: Zap,
-                },
-                {
-                  step: "2",
-                  title: "Set Rewards",
-                  description:
-                    "Choose your reward percentage and which stocks your customers can invest in.",
-                  icon: Target,
-                },
-                {
-                  step: "3",
-                  title: "Customer Shops",
-                  description:
-                    "Customers make purchases and automatically earn investment rewards with each transaction.",
-                  icon: CreditCard,
-                },
-                {
-                  step: "4",
-                  title: "Watch Growth",
-                  description:
-                    "Track customer loyalty, spending increases, and overall business growth through our dashboard.",
-                  icon: BarChart3,
-                },
-              ].map((step, index) => (
-                <motion.div
-                  key={step.step}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.2 }}
-                  className="text-center"
-                >
-                  <div className="relative mb-8">
-                    <div className="w-20 h-20 bg-gradient-to-r from-cyan-500 to-sky-500 rounded-2xl flex items-center justify-center mx-auto shadow-xl">
-                      <step.icon className="w-10 h-10 text-white" />
-                    </div>
-                    <div className="absolute -top-2 -right-2 w-8 h-8 bg-amber-400 rounded-full flex items-center justify-center text-white font-bold text-sm">
-                      {step.step}
-                    </div>
+          <div className="grid lg:grid-cols-4 gap-8">
+            {[
+              {
+                step: "1",
+                title: "Quick Setup",
+                description:
+                  "Integrate ARRC into your POS system or e-commerce platform in under an hour.",
+                icon: Zap,
+              },
+              {
+                step: "2",
+                title: "Set Rewards",
+                description:
+                  "Choose your reward percentage and which stocks your customers can invest in.",
+                icon: Target,
+              },
+              {
+                step: "3",
+                title: "Customer Shops",
+                description:
+                  "Customers make purchases and automatically earn investment rewards with each transaction.",
+                icon: CreditCard,
+              },
+              {
+                step: "4",
+                title: "Watch Growth",
+                description:
+                  "Track customer loyalty, spending increases, and overall business growth through our dashboard.",
+                icon: BarChart3,
+              },
+            ].map((step, index) => (
+              <motion.div
+                key={step.step}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.2 }}
+                className="text-center"
+              >
+                <div className="relative mb-8">
+                  <div className="w-20 h-20 bg-gradient-to-r from-cyan-500 to-sky-500 rounded-2xl flex items-center justify-center mx-auto shadow-xl">
+                    <step.icon className="w-10 h-10 text-white" />
                   </div>
-                  <h3 className="text-xl font-bold text-slate-900 mb-4">
-                    {step.title}
-                  </h3>
-                  <p className="text-slate-600 leading-relaxed">
-                    {step.description}
-                  </p>
-                </motion.div>
-              ))}
-            </div>
+                  <div className="absolute -top-2 -right-2 w-8 h-8 bg-amber-400 rounded-full flex items-center justify-center text-white font-bold text-sm">
+                    {step.step}
+                  </div>
+                </div>
+                <h3 className="text-xl font-bold text-slate-900 mb-4">
+                  {step.title}
+                </h3>
+                <p className="text-slate-600 leading-relaxed">
+                  {step.description}
+                </p>
+              </motion.div>
+            ))}
           </div>
         </div>
       </section>

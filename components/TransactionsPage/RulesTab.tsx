@@ -1,11 +1,8 @@
 "use client";
-
 import { useEffect, useState } from "react";
 import { Zap, TrendingUp } from "lucide-react";
-
 import { API_GET_ALL_CATEGORY } from "@/utils/api/APIConstant";
 import { getApiWithOutQuery } from "@/utils/endpoints/common";
-
 
 type Categories = {
   _id: string;

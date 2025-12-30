@@ -75,15 +75,13 @@ export default function LetsLevelUp() {
 
   return (
     <div className="relative min-h-screen px-6 py-10 arr-bg overflow-hidden">
-                  <img
-    src="/images/money-big.png"
-    alt="Background"
-    className="absolute inset-0 w-full h-full object-cover opacity-6 pointer-events-none"
-  />
+      <img
+        src="/images/money-big.png"
+        alt="Background"
+        className="absolute inset-0 w-full h-full object-cover opacity-6 pointer-events-none"
+      />
       <div className="max-w-6xl mx-auto space-y-12">
-        
         <div className="space-y-8">
-
           <div className="relative arr-hero-wrap rounded-2xl overflow-hidden h-48 sm:h-56 w-full max-w-[650px] mx-auto px-2 sm:px-0">
             <div className="arr-hero-glow" />
             <div className="absolute inset-0 flex items-center justify-center z-20">
@@ -138,7 +136,7 @@ export default function LetsLevelUp() {
             <div className="inline-block mt-4 bg-white px-6 py-3 rounded-lg shadow-md text-sm italic text-slate-700">
               “An investment in knowledge pays the best interest.”
               <br />
-              <span className="font-semibold not-italic">
+              <span className="text-slate-900 font-semibold not-italic">
                 — Benjamin Franklin
               </span>
             </div>
@@ -211,10 +209,10 @@ export default function LetsLevelUp() {
                   { value: "365", label: "Daily (365)" },
                 ]}
               />
-          <span className="text-xs text-slate-500">
-              This affects how often interest is calculated on the initial
-              lump sum.
-            </span>
+              <span className="text-xs text-slate-500">
+                This affects how often interest is calculated on the initial
+                lump sum.
+              </span>
             </div>
             <div className="space-y-6">
               <div className="rounded-lg border text-card-foreground bg-white/95 backdrop-blur-sm shadow-xl border-slate-400 w-full h-full p-6">
