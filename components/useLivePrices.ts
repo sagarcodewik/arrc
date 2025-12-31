@@ -22,7 +22,6 @@ export type MarketData = {
 
 export function useLivePrices(data: any[], refreshKey = 0) {
   const [prices, setPrices] = useState<Record<string, MarketData>>({});
-
   useEffect(() => {
     if (!data || data.length === 0) return;
 
@@ -80,13 +79,17 @@ export function useLivePrices(data: any[], refreshKey = 0) {
       return {
         ...item,
         market: null,
-        currentValue: item.investedAmount ?? 0,
+        // currentValue: item.investedAmount ?? 0,
+        currentValue: item.rewardValue ?? 0,
+
         profitLoss: 0,
       };
     }
 
     const qty = item.quantity ?? 1;
-    const invested = item.investedAmount ?? 0;
+    // const invested = item.investedAmount ?? 0;
+    const invested = item.rewardValue ?? 0;
+
     const currentValue = market.price * qty;
 
     return {

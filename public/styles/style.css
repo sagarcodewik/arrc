@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "react-datepicker/dist/react-datepicker.css";
 
 /* ================================ THEME TOKENS ================================ */
 @theme {
@@ -161,39 +162,114 @@ input:-webkit-autofill:focus {
 
 
 
-/* ---------------------------
-   BUSINESS DASHBOARD UI
---------------------------- */
+/* ===============================
+   DARK FORM (ONBOARDING CARD)
+================================ */
 
-.arr-dashboard-bg {
-  background:
-    linear-gradient(
-      to bottom,
-      rgba(240, 245, 248, 0.92),
-      rgba(255, 255, 255, 0.96)
+.arr-dark-bg {
+  background: radial-gradient(
+      ellipse at center,
+      rgba(255, 140, 0, 0.18),
+      transparent 65%
     ),
-    url("/money-bg.png");
-  background-size: cover;
-  background-position: center;
+    linear-gradient(135deg, #140a05, #2a1208, #0b0a0f);
 }
 
-.arr-kpi-card {
-  @apply bg-white rounded-lg border border-gray-200 p-6 shadow-md;
+.arr-dark-card {
+  background: linear-gradient(to bottom, #1b2232, #0e1320);
+  border-radius: 20px;
+  box-shadow: 0 0 60px rgba(255, 140, 0, 0.25);
 }
 
-.arr-section-title {
-  @apply text-xl font-semibold text-gray-800 mb-4;
+.arr-dark-input {
+  @apply w-full rounded-lg px-4 py-3 text-sm
+    bg-[#182033] border border-[#2a3550]
+    text-white placeholder-gray-400
+    focus:outline-none focus:border-orange-500;
 }
 
-/* Sidebar styles */
-.arr-sidebar {
-  @apply fixed inset-y-0 left-0 w-64 bg-white shadow-lg border-r border-gray-200;
-}
-.arr-sidebar a {
-  @apply flex items-center gap-2 px-4 py-2 text-gray-700 rounded hover:bg-gray-100;
+.arr-progress-active {
+  @apply h-1.5 w-8 rounded bg-orange-500;
 }
 
-/* Top nav */
-.arr-top-nav {
-  @apply flex items-center justify-between px-8 py-4 bg-white border-b border-gray-200;
+.arr-progress-inactive {
+  @apply h-1.5 w-5 rounded bg-gray-600;
+}
+
+.arr-cta {
+  @apply w-full rounded-lg py-3 font-semibold text-white
+    bg-gradient-to-r from-orange-400 to-orange-600
+    hover:opacity-90 transition;
+}
+/* ===============================
+   DARK DATEPICKER (GLOBAL FIX)
+================================ */
+
+/* 🔥 MOST IMPORTANT: full width fix */
+.react-datepicker-wrapper {
+  width: 100%;
+}
+
+.react-datepicker__input-container {
+  width: 100%;
+}
+
+/* ===============================
+   DATEPICKER PANEL
+================================ */
+
+.react-datepicker {
+  background-color: #0e1320;
+  border: 1px solid #2a3550;
+  color: #ffffff;
+  font-family: inherit;
+  border-radius: 12px;
+}
+
+.react-datepicker__header {
+  background-color: #182033;
+  border-bottom: 1px solid #2a3550;
+}
+
+/* Month title & weekdays */
+.react-datepicker__current-month,
+.react-datepicker__day-name {
+  color: #e5e7eb;
+  font-weight: 500;
+}
+
+/* Normal day */
+.react-datepicker__day {
+  color: #cbd5e1;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+/* Hover */
+.react-datepicker__day:hover {
+  background-color: #f97316;
+  color: #0e1320;
+}
+
+/* Selected */
+.react-datepicker__day--selected,
+.react-datepicker__day--keyboard-selected {
+  background-color: #f97316;
+  color: #0e1320;
+  font-weight: 600;
+}
+
+/* Today */
+.react-datepicker__day--today {
+  border: 1px solid #f97316;
+}
+
+/* Disabled */
+.react-datepicker__day--disabled {
+  color: #64748b;
+}
+
+/* Remove arrow */
+.react-datepicker__triangle {
+  display: none;
 }

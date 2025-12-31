@@ -98,10 +98,17 @@ const PortfolioPage = () => {
       item.assetName && item.assetName !== "Unknown" && item.investedAmount > 0
   );
 
-  const totalInvested = assets.reduce((s, a) => s + (a.investedAmount || 0), 0);
+  // const totalInvested = assets.reduce((s, a) => s + (a.investedAmount || 0), 0);
+
+  // const totalValue = assets.reduce(
+  //   (s, a) => s + (a.currentValue || a.investedAmount || 0),
+  //   0
+  // );
+
+  const totalInvested = assets.reduce((s, a) => s + (a.rewardValue || 0), 0);
 
   const totalValue = assets.reduce(
-    (s, a) => s + (a.currentValue || a.investedAmount || 0),
+    (s, a) => s + (a.currentValue || a.rewardValue || 0),
     0
   );
 
@@ -282,13 +289,17 @@ const PortfolioPage = () => {
                         <div>
                           <div className="font-semibold">{item.assetName}</div>
                           <div className="text-sm text-gray-400">
-                            Invested: ${item.investedAmount.toFixed(2)}
+                            {/* Invested: ${item.investedAmount.toFixed(2)} */}
+                            Invested: ${item.rewardValue.toFixed(2)}
+
                           </div>
                         </div>
 
                         <div className="text-right">
                           <div className="font-semibold">
                             ${item.currentValue.toFixed(2)}
+                            {/* ${item.rewardValue.toFixed(2)} */}
+
                           </div>
                           <div
                             className={`text-sm ${

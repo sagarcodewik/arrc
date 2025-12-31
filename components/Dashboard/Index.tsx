@@ -98,15 +98,14 @@ const Dashboard = () => {
   const [aiLoading, setAiLoading] = useState(false);
   const [aiError, setAiError] = useState<string | null>(null);
   const [recentRewards, setRecentRewards] = useState<any[]>([]);
+  console.log("recents rewards=======================>",recentRewards)
   const [page, setPage] = useState(1);
   const [limit] = useState(5);
   const [pagination, setPagination] = useState<any>(null);
   const [loadingRewards, setLoadingRewards] = useState(false);
-  console.log("recentRewards=================>", recentRewards);
   const [accounts, setAccounts] = useState<any[]>([]);
   const [spending, setSpending] = useState<any>(null);
   const [data, setData] = useState<any[]>([]);
-  console.log("spending====================>", spending);
   const [portfolioSummary, setPortfolioSummary] = useState<{
     totalInvested: number;
     totalValue: number;
@@ -114,6 +113,7 @@ const Dashboard = () => {
     totalPendingRewards: number;
     pendingDelta: number;
     totalProfitLoss: number;
+    rewardValue:number
   } | null>(null);
 
   const fetchPortfolio = async (showPageLoader = false) => {
@@ -140,11 +140,18 @@ const Dashboard = () => {
       item.assetName && item.assetName !== "Unknown" && item.investedAmount > 0
   );
 
-  console.log("assets=============>", assets);
-  const totalInvested = assets.reduce((s, a) => s + (a.investedAmount || 0), 0);
+
+  // const totalInvested = assets.reduce((s, a) => s + (a.investedAmount || 0), 0);
+
+  // const totalValue = assets.reduce(
+  //   (s, a) => s + (a.currentValue || a.investedAmount || 0),
+  //   0
+  // );
+
+  const totalInvested = assets.reduce((s, a) => s + (a.rewardValue || 0), 0);
 
   const totalValue = assets.reduce(
-    (s, a) => s + (a.currentValue || a.investedAmount || 0),
+    (s, a) => s + (a.currentValue || a.rewardValue || 0),
     0
   );
 
@@ -153,14 +160,16 @@ const Dashboard = () => {
   const profitLossPercent =
     totalInvested > 0 ? (profitLoss / totalInvested) * 100 : 0;
 
-  console.log("portfolioSummary========>", portfolioSummary);
+  const isLoss = profitLoss < 0;
+  const formattedAmount = Math.abs(profitLoss).toFixed(2);
+  const formattedPercent = Math.abs(profitLossPercent).toFixed(1);
 
   const loadPortfolioSummary = async () => {
     try {
       const res = await getApiWithOutQuery({
         url: API_PORTFOLIO_SUMMARY,
       });
-
+      
       if (res?.success) {
         setPortfolioSummary(res.data);
       }
@@ -168,6 +177,7 @@ const Dashboard = () => {
       console.error("Failed to load portfolio summary", err);
     }
   };
+
   const handleQuickClick = (q: string) => {
     setQuestion(q);
     setIsOpen(true);
@@ -236,7 +246,7 @@ const Dashboard = () => {
       page: pageNo,
       rowsPerPage: limit,
     });
-
+   console.log("res=========== in rewards @@@@@@@@@===>",res)
     if (res?.success) {
       setRecentRewards(res.data.data);
       setPagination(res.data.pagination);
@@ -312,16 +322,19 @@ const actions = [
   const stats: StatItem[] = [
     {
       title: "Portfolio Value",
-      value: `$${portfolioSummary?.totalValue?.toFixed(2) ?? "0.00"}`,
+      // value: `$${portfolioSummary?.totalRewards?.toFixed(2) ?? "0.00"}`,
+      value: `$${totalValue?.toFixed(2) ?? "0.00"}`,
+
       subLabel: "Total invested",
       delta:
-        portfolioSummary && portfolioSummary.totalInvested > 0
+        portfolioSummary && portfolioSummary.totalRewards > 0
           ? `${(
               ((portfolioSummary.totalValue - portfolioSummary.totalInvested) /
                 portfolioSummary.totalInvested) *
               100
             ).toFixed(2)}%`
           : undefined,
+    
       showDelta: !!portfolioSummary,
       icon: <Wallet size={18} className="text-white" />,
     },
@@ -374,6 +387,8 @@ const actions = [
       setIsLoading(false);
     }
   };
+
+
 
   return (
     <>
@@ -1009,9 +1024,9 @@ const actions = [
                   <div className="flex-1 p-4 flex flex-col justify-center space-y-4 text-center">
                     <div className="space-y-1">
                       <p className="text-3xl font-bold text-slate-900">
-                        ${totalValue.toFixed(2)}
+                        $ {totalValue.toFixed(2)}
                       </p>
-                      <div
+                      {/* <div
                         className={`flex items-center justify-center gap-1 text-sm font-medium ${
                           profitLoss >= 0 ? "text-emerald-600" : "text-red-600"
                         }`}
@@ -1021,7 +1036,21 @@ const actions = [
                           ${profitLoss.toFixed(2)} (
                           {profitLossPercent.toFixed(1)}%)
                         </span>
-                      </div>
+                      </div> */}
+                      <div
+                          className={`flex items-center justify-center gap-1 text-sm font-medium ${
+                            isLoss ? "text-red-600" : "text-emerald-600"
+                          }`}
+                        >
+                          <TrendingUp
+                            className={`w-4 h-4 ${isLoss ? "rotate-180" : ""}`}
+                          />
+                          <span>
+                            {isLoss ? "-" : "+"} ${formattedAmount} ({isLoss ? "-" : "+"}
+                            {formattedPercent}%)
+                          </span>
+                        </div>
+
                       <p className="text-xs text-slate-400">
                         Based on live market prices
                       </p>

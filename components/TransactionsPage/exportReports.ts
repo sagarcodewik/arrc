@@ -69,7 +69,6 @@ export const exportSpendingPDF = async (
     angle: 45,
   });
 
-
   doc.restoreGraphicsState?.();
 
   const tableData = Object.entries(categoryMap).map(([category, amount]) => [

@@ -43,10 +43,17 @@ export default function MarketsPage() {
       item.assetName && item.assetName !== "Unknown" && item.investedAmount > 0
   );
 
-  const totalInvested = assets.reduce((s, a) => s + (a.investedAmount || 0), 0);
+  // const totalInvested = assets.reduce((s, a) => s + (a.investedAmount || 0), 0);
+
+  // const totalValue = assets.reduce(
+  //   (s, a) => s + (a.currentValue || a.investedAmount || 0),
+  //   0
+  // );
+
+    const totalInvested = assets.reduce((s, a) => s + (a.rewardValue || 0), 0);
 
   const totalValue = assets.reduce(
-    (s, a) => s + (a.currentValue || a.investedAmount || 0),
+    (s, a) => s + (a.currentValue || a.rewardValue || 0),
     0
   );
 
@@ -57,6 +64,7 @@ export default function MarketsPage() {
 
   return (
     <div className="min-h-screen bg-[#0A1220] text-white px-6 py-8 space-y-8">
+      
       <div className="space-y-4">
         <div className="flex justify-between bg-[#101A2B] p-3 rounded-xl text-sm">
           <div className="flex gap-2 items-center">
@@ -80,15 +88,17 @@ export default function MarketsPage() {
 
         <TradingViewTicker />
       </div>
-          <div className="py-10 text-center">
-            <h1 className="text-3xl md:text-4xl font-bold text-white tracking-tight">
-              Your <span className="text-white">ARRC</span> Portfolio
-            </h1>
 
-            <p className="mt-2 text-sm md:text-base text-slate-300">
-              Track the stocks you&apos;ve earned through your purchases
-            </p>
-          </div>
+      <div className="py-10 text-center">
+        <h1 className="text-3xl md:text-4xl font-bold text-white tracking-tight">
+          Your <span className="text-white">ARRC</span> Portfolio
+        </h1>
+
+        <p className="mt-2 text-sm md:text-base text-slate-300">
+          Track the stocks you&apos;ve earned through your purchases
+        </p>
+      </div>
+
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-[#101A2B] p-6 rounded-xl">
           <div className="text-gray-400 text-sm">Total Portfolio Value</div>
@@ -124,7 +134,9 @@ export default function MarketsPage() {
             <div>
               <div className="font-semibold">{item.assetName}</div>
               <div className="text-sm text-gray-400">
-                Invested: ${item.investedAmount.toFixed(2)}
+                {/* Invested: ${item.investedAmount.toFixed(2)} */}
+                Invested: ${item.rewardValue.toFixed(2)}
+
               </div>
             </div>
 
@@ -144,6 +156,7 @@ export default function MarketsPage() {
           </div>
         ))}
       </div>
+
     </div>
   );
 }

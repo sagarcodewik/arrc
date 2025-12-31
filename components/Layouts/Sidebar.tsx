@@ -74,11 +74,11 @@ const mainNavLinks: NavLink[] = [
 ];
 
 const businessNavLinks: NavLink[] = [
-  // {
-  //   label: "Business Dashboard",
-  //   href: "/business-suite",
-  //   icon: <Briefcase className="w-5 h-5 text-indigo-600" />,
-  // },
+  {
+    label: "Business Dashboard",
+    href: "/business-suite",
+    icon: <Briefcase className="w-5 h-5 text-indigo-600" />,
+  },
   // {
   //   label: "Analytics",
   //   href: "/business-analytics",
@@ -107,7 +107,9 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
 
   return (
     <>
+ 
       <AnimatePresence>
+           <h1> Order History</h1>
         {open && (
           <>
             <motion.div
