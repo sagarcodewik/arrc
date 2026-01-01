@@ -20,7 +20,6 @@ import {
 import { useState } from "react";
 import ShowToast from "../Common/ShowToast";
 
-/* ------------------ STEP ENUM ------------------ */
 const STEPS = {
   INFO: 1,
   BUSINESS: 2,
@@ -60,7 +59,7 @@ export default function MerchantSignupFlow({ onBack }: MerchantSignupProps) {
   );
   const [dob, setDob] = useState<Date | null>(null);
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    /* ------------------ HELPERS ------------------ */
+
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 

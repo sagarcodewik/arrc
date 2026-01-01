@@ -8,11 +8,11 @@ import Select from "../ui/Select";
 import AnimatedPhrase from "./AnimatedPhrase";
 import motivationalPhrases from "./motivationalPharases";
 export default function LetsLevelUp() {
-  const [principal, setPrincipal] = useState(10000);
-  const [contribution, setContribution] = useState(100);
+  const [principal, setPrincipal] = useState<string>("");
+  const [contribution, setContribution] = useState<string>("");
   const [frequency, setFrequency] = useState("monthly");
-  const [rate, setRate] = useState(7);
-  const [years, setYears] = useState(10);
+  const [rate, setRate] = useState<string>("");
+  const [years, setYears] = useState<string>("");
   const [periods, setPeriods] = useState("12");
   const [futureValue, setFutureValue] = useState(0);
   const [totalInvested, setTotalInvested] = useState(0);
@@ -21,6 +21,9 @@ export default function LetsLevelUp() {
   const [interestPMT, setInterestPMT] = useState(0);
   const [phraseIndex, setPhraseIndex] = useState(0);
   const [showPhrase, setShowPhrase] = useState(true);
+  const allowOnlyNumber = (value: string) => /^\d*$/.test(value);
+  const clamp = (value: number, min: number, max: number) =>
+    Math.min(Math.max(value, min), max);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -35,10 +38,11 @@ export default function LetsLevelUp() {
   }, []);
 
   useEffect(() => {
-    const P = principal;
-    const PMT = contribution;
-    const r = rate / 100;
-    const t = years;
+    const P = clamp(Number(principal) || 0, 0, 1_000_000_000);
+    const PMT = clamp(Number(contribution) || 0, 0, 1_000_000);
+    const r = clamp(Number(rate) || 0, 0, 100) / 100;
+    const t = clamp(Number(years) || 0, 0, 100);
+
     const n = Number(periods);
     const FV_PV = P * Math.pow(1 + r / n, n * t);
     const freqMap: Record<string, number> = {
@@ -59,7 +63,14 @@ export default function LetsLevelUp() {
 
     const total = FV_PV + FV_PMT;
     const invested = P + PMT * totalPeriods;
-
+    if (!Number.isFinite(total) || !Number.isFinite(invested)) {
+      setFutureValue(0);
+      setTotalInvested(0);
+      setTotalInterest(0);
+      setInterestPV(0);
+      setInterestPMT(0);
+      return;
+    }
     setFutureValue(total);
     setTotalInvested(invested);
     setTotalInterest(total - invested);
@@ -87,7 +98,6 @@ export default function LetsLevelUp() {
             <div className="absolute inset-0 flex items-center justify-center z-20">
               <AnimatedPhrase text={motivationalPhrases[phraseIndex]} />
             </div>
-
             <motion.div
               className="absolute inset-0"
               animate={{
@@ -102,7 +112,6 @@ export default function LetsLevelUp() {
                 ease: "easeInOut",
               }}
             />
-
             <div className="absolute top-4 left-4 w-2 h-2 rounded-full bg-cyan-400/60" />
             <div className="absolute top-4 right-4 w-2 h-2 rounded-full bg-sky-400/60" />
             <div className="absolute bottom-4 left-4 w-2 h-2 rounded-full bg-cyan-400/60" />
@@ -151,22 +160,29 @@ export default function LetsLevelUp() {
               </h2>
 
               <div className="border-t border-slate-300 mt-3"></div>
-
               <Input
                 label="Initial Investment (Lump Sum)"
-                type="number"
+                type="text"
+                inputMode="numeric"
+                placeholder="Enter amount"
                 value={principal}
-                onChange={(e) => setPrincipal(+e.target.value)}
+                onChange={(e) => {
+                  const v = e.target.value;
+                  if (allowOnlyNumber(v)) setPrincipal(v);
+                }}
               />
-
               <div className="bg-slate-50 p-4 rounded-lg border-slate-800 space-y-4">
                 <Input
                   label="Regular Contribution"
-                  type="number"
+                  type="text"
+                  inputMode="numeric"
+                  placeholder="Enter Contribution"
                   value={contribution}
-                  onChange={(e) => setContribution(+e.target.value)}
+                  onChange={(e) => {
+                    const v = e.target.value;
+                    if (allowOnlyNumber(v)) setContribution(v);
+                  }}
                 />
-
                 <Select
                   label="Contribution Frequency"
                   value={frequency}
@@ -178,24 +194,32 @@ export default function LetsLevelUp() {
                     { value: "monthly", label: "Monthly" },
                   ]}
                 />
-
                 <p className="text-xs text-slate-500">
                   ⭐ This represents your wealth-building habit
                 </p>
               </div>
-
               <Input
                 label="Annual Interest Rate (%)"
-                type="number"
+                type="text"
+                inputMode="numeric"
+                placeholder="Enter rate"
                 value={rate}
-                onChange={(e) => setRate(+e.target.value)}
+                onChange={(e) => {
+                  const v = e.target.value;
+                  if (allowOnlyNumber(v)) setRate(v);
+                }}
               />
 
               <Input
                 label="Investment Duration (Years)"
-                type="number"
+                type="text"
+                inputMode="numeric"
+                placeholder="Enter years"
                 value={years}
-                onChange={(e) => setYears(+e.target.value)}
+                onChange={(e) => {
+                  const v = e.target.value;
+                  if (allowOnlyNumber(v)) setYears(v);
+                }}
               />
 
               <Select

@@ -50,7 +50,7 @@ export default function MarketsPage() {
   //   0
   // );
 
-    const totalInvested = assets.reduce((s, a) => s + (a.rewardValue || 0), 0);
+  const totalInvested = assets.reduce((s, a) => s + (a.rewardValue || 0), 0);
 
   const totalValue = assets.reduce(
     (s, a) => s + (a.currentValue || a.rewardValue || 0),
