@@ -91,7 +91,7 @@ export function useLivePrices(data: any[], refreshKey = 0) {
     const invested = item.rewardValue ?? 0;
 
     const currentValue = market.price * qty;
-
+  console.log("currentValue==============>",currentValue)
     return {
       ...item,
       market,

@@ -135,10 +135,12 @@ const Dashboard = () => {
       }
     }
   };
-  const assets = useLivePrices(data).filter(
-    (item) =>
-      item.assetName && item.assetName !== "Unknown" && item.investedAmount > 0
-  );
+ const assets = useLivePrices(data).filter(
+  (item) =>
+    item.assetName &&
+    item.assetName !== "Unknown" &&
+    item.rewardValue > 0   // ✅ FIX
+);
 
 
   // const totalInvested = assets.reduce((s, a) => s + (a.investedAmount || 0), 0);

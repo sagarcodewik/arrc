@@ -1,83 +1,240 @@
 "use client";
-import React, { useState } from "react";
+
+import React, { useEffect, useState } from "react";
 import AnimateSection from "../AnimateSection";
 import Section from "../Section";
-import { TrendingUp, Wallet, ClockIcon, ActivityIcon, Package, Landmark,} from "lucide-react";
+import TradingViewTicker from "@/components/TradingViewTicker";
+import { useMarketStatus } from "./useMarketStatus";
+import { useLivePrices } from "../useLivePrices";
+import { API_PORTFOLIO_GET } from "@/utils/api/APIConstant";
+import { getApiWithOutQuery } from "@/utils/endpoints/common";
+import { useDispatch } from "react-redux";
+import { showLoader, hideLoader } from "@/redux/loaderSlice";
 
+import {
+  TrendingUp,
+  TrendingDown,
+  Wallet,
+  ClockIcon,
+  ActivityIcon,
+  Package,
+  Landmark,
+} from "lucide-react";
 
-const TransactionsPage = () => {
+const MarketsPage = () => {
+  const dispatch = useDispatch();
+  const { time, isOpen } = useMarketStatus();
+  const [data, setData] = useState<any[]>([]);
 
+  /* ---------------- FETCH PORTFOLIO ---------------- */
+  useEffect(() => {
+    const fetchPortfolio = async () => {
+      dispatch(showLoader());
+      try {
+        const res = await getApiWithOutQuery({ url: API_PORTFOLIO_GET });
+        if (res?.success) setData(res.data || []);
+      } catch (err) {
+        console.error("Portfolio fetch failed", err);
+      } finally {
+        dispatch(hideLoader());
+      }
+    };
+    fetchPortfolio();
+  }, [dispatch]);
+
+  /* ---------------- LIVE ASSETS ---------------- */
+  const assets = useLivePrices(data).filter(
+    (item) =>
+      item.assetName &&
+      item.assetName !== "Unknown" &&
+      item.rewardValue > 0
+  );
+
+  const totalInvested = assets.reduce(
+    (sum, a) => sum + (a.rewardValue || 0),
+    0
+  );
+
+  const totalValue = assets.reduce(
+    (sum, a) => sum + (a.currentValue || a.rewardValue || 0),
+    0
+  );
+
+  const profitLoss = totalValue - totalInvested;
+  console.log("profitLoss=============>",profitLoss)
+  const profitLossPercent =
+    totalInvested > 0 ? (profitLoss / totalInvested) * 100 : 0;
+
+  /* ================================================= */
   return (
-    <>
-      <AnimateSection>
-        <Section customClass="relative mb-6">
-          <div className="flex flex-col gap-6 w-full">
-           <div className="flex flex-col sm:flex-row items-center justify-between gap-2 rounded-lg border border-slate-800 bg-black/100 p-3 backdrop-blur-sm">
+    <AnimateSection>
+      <Section customClass="relative mb-6">
+        <div className="flex flex-col gap-6 w-full">
+
+          {/* -------- MARKET STATUS -------- */}
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-2 rounded-lg border border-slate-800 bg-black p-3">
             <div className="flex items-center gap-3">
-              <div className="flex items-center gap-2">
-                <span className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
-                <span className="text-sm font-semibold text-white">Markets Open</span>
-              </div>
+              <span
+                className={`h-2 w-2 rounded-full ${
+                  isOpen ? "bg-green-500" : "bg-red-500"
+                } animate-pulse`}
+              />
+              <span className="text-sm font-semibold text-white">
+                {isOpen ? "Markets Open" : "Markets Closed"}
+              </span>
               <div className="flex items-center gap-1 text-sm text-slate-400">
-                <ClockIcon className="h-4 w-4" /> <span>10:31:42 AM</span>
+                <ClockIcon className="h-4 w-4" />
+                <span>{time}</span>
               </div>
             </div>
+
             <div className="flex items-center gap-2 text-xs text-slate-300">
               <ActivityIcon className="h-4 w-4 text-amber-400" />
-              <span>Data delayed{" "}<span className="font-semibold text-amber-400">~15 minutes</span>{" "}• Updated continuously</span>
+              <span>
+                Data delayed{" "}
+                <span className="font-semibold text-amber-400">
+                  ~15 minutes
+                </span>{" "}
+                • Updated continuously
+              </span>
             </div>
-           </div>
-           <div className="overflow-hidden rounded-xl border border-slate-800 bg-black/100 shadow-2xl">      
+          </div>
+
+          {/* -------- TRADING VIEW -------- */}
+          <div className="overflow-hidden rounded-xl border border-slate-800 bg-black shadow-2xl">
             <div className="flex items-center justify-between p-3">
-              <h2 className="flex items-center gap-2 text-lg font-bold text-blue-400"><TrendingUp className="h-5 w-5 text-blue-400" /> Top S&P 500 Stocks – Live Prices</h2>
+              <h2 className="flex items-center gap-2 text-lg font-bold text-blue-400">
+                <TrendingUp className="h-5 w-5" />
+                Top S&P 500 Stocks – Live Prices
+              </h2>
               <span className="text-xs text-slate-400">50+ stocks rotating</span>
             </div>
-            <div className="tradingview-widget-container h-[44px] w-full">
-              <iframe title="TradingView Ticker Tape" src="https://www.tradingview-widget.com/embed-widget/ticker-tape/?locale=en#%7B%22symbols%22%3A%5B%7B%22description%22%3A%22Apple%22%2C%22proName%22%3A%22NASDAQ%3AAAPL%22%7D%2C%7B%22description%22%3A%22Microsoft%22%2C%22proName%22%3A%22NASDAQ%3AMSFT%22%7D%2C%7B%22description%22%3A%22Alphabet%22%2C%22proName%22%3A%22NASDAQ%3AGOOGL%22%7D%2C%7B%22description%22%3A%22Amazon%22%2C%22proName%22%3A%22NASDAQ%3AAMZN%22%7D%2C%7B%22description%22%3A%22NVIDIA%22%2C%22proName%22%3A%22NASDAQ%3ANVDA%22%7D%5D%2C%22showSymbolLogo%22%3Atrue%2C%22isTransparent%22%3Atrue%2C%22colorTheme%22%3A%22dark%22%2C%22width%22%3A%22100%25%22%2C%22height%22%3A44%7D" frameBorder="0" scrolling="no" className="h-[44px] w-full"/>
-            </div>
-           </div>
-           <div className="text-center w-full">
-            <h1 className="text-slate-900 text-2xl sm:text-3xl lg:text-3xl font-semibold">Your ARRC Portfolio</h1>
-            <p className="text-slate-600 text-sm sm:text-base font-medium">Track the stocks you've earned through your purchases</p>
-           </div>
-           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
-            <div className="group rounded-xl text-card-foreground p-4 lg:p-6 backdrop-blur-sm border border-slate-800 bg-black/100 shadow-lg hover:shadow-xl hover:scale-102 transition-all duration-300">
-             <p className="text-[15px] font-medium text-white/80 line-clamp-1 flex items-center gap-2"><Wallet size={18} className="text-white/80" /> Total Portfolio Value </p>
-             <h3 className="text-2xl font-semibold tracking-tight text-white line-clamp-1">$0.00</h3>
-            </div>
-            <div className="group rounded-xl text-card-foreground p-4 lg:p-6 backdrop-blur-sm border border-slate-800 bg-black/100 shadow-lg hover:shadow-xl hover:scale-102 transition-all duration-300">
-             <p className="text-[15px] font-medium text-white/80 line-clamp-1 flex items-center gap-2"><Wallet size={18} className="text-white/80" /> Total Gain/Loss </p>
-             <h3 className="text-2xl font-semibold tracking-tight text-green-400 line-clamp-1">+$0.00(+0.00%)</h3>
-            </div>
-            <div className="group rounded-xl text-card-foreground p-4 lg:p-6 backdrop-blur-sm border border-slate-800 bg-black/100 shadow-lg hover:shadow-xl hover:scale-102 transition-all duration-300">
-             <p className="text-[15px] font-medium text-white/80 line-clamp-1 flex items-center gap-2"><Package size={18} className="text-white/80" /> Holdings </p>
-             <h3 className="text-2xl font-semibold tracking-tight text-white line-clamp-1">0</h3>
-             <p className="text-[15px] font-medium text-white/80 line-clamp-1">Different stocks</p>
-            </div>
-           </div>
-           <div className="h-full rounded-2xl border border-slate-800 bg-black/100 shadow-xl hover:shadow-2xl transition-all duration-500 flex flex-col">  
-               <div className="grid grid-cols-1 gap-3 p-4 border-b border-slate-800 sm:grid-cols-[1fr_auto] sm:items-center">
-                 <h3 className="text-2xl font-semibold sm:text-lg text-white leading-none tracking-tight flex items-center gap-2"><Landmark className="w-5 h-5 text-emerald-600" /> Your Stock Holdings</h3>
-               </div>
-               {/* Empty State */}
-               <div className="flex flex-col items-center justify-center text-center px-4 min-h-[12rem] lg:min-h-[16rem] flex-auto">
-                <Package size={56} className="text-6xl text-emerald-500 mx-auto mb-3" />
-                <h3 className="text-2xl font-bold text-white mb-2">No Holdings Yet</h3>
-                <p className="text-white">Start shopping with ARRC merchant partners to earn stock rewards and build your portfolio!</p>
-              </div>
-           </div>
-           <div className="h-full rounded-2xl border border-slate-800 bg-black/100 shadow-xl hover:shadow-2xl transition-all duration-500 flex flex-col">  
-             <div className="flex flex-col items-center justify-center text-center px-4 min-h-[12rem] lg:min-h-[16rem] flex-auto">
-              <h3 className="text-2xl font-bold text-white mb-2">Your Personalized Portfolio</h3>
-              <p className="text-white mb-2">These are the stocks you've earned through ARRC rewards. Keep shopping to grow your investments!</p>
-              <p className="text-white text-xs">Disclaimer: Markets are volatile. This data is for informational purposes only. Always consult professional financial advisors for investment decisions.</p>
-             </div>
-           </div>
+            <TradingViewTicker />
           </div>
-        </Section>
-      </AnimateSection>
-    </>
+
+          {/* -------- TITLE -------- */}
+          <div className="text-center">
+            <h1 className="text-white text-2xl sm:text-3xl font-semibold">
+              Your ARRC Portfolio
+            </h1>
+            <p className="text-slate-400">
+              Track the stocks you've earned through your purchases
+            </p>
+          </div>
+
+          {/* -------- STATS -------- */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <StatCard
+              icon={<Wallet size={18} />}
+              label="Total Portfolio Value"
+              value={`$${totalValue.toFixed(2)}`}
+            />
+
+          <StatCard
+              icon={<Wallet size={18} />}
+              label="Total Gain / Loss"
+              value={
+                <span className="flex items-center gap-2">
+                  {profitLoss >= 0 ? (
+                    <TrendingUp size={20} className="text-green-400" />
+                  ) : (
+                    <TrendingDown size={20} className="text-red-400" />
+                  )}
+
+                  <span
+                    className={`text-2xl font-semibold ${
+                      profitLoss >= 0 ? "text-green-400" : "text-red-400"
+                    }`}
+                  >
+                    {profitLoss >= 0 ? "+" : "-"}$
+                    {Math.abs(profitLoss).toFixed(2)} (
+                    {profitLossPercent.toFixed(2)}%)
+                  </span>
+                </span>
+              }
+            />
+
+            <StatCard
+              icon={<Package size={18} />}
+              label="Holdings"
+              value={assets.length}
+              sub="Different stocks"
+            />
+          </div>
+
+          {/* -------- HOLDINGS -------- */}
+          <div className="rounded-2xl border border-slate-800 bg-black shadow-xl">
+            <div className="p-4 border-b border-slate-800">
+              <h3 className="text-lg font-semibold text-white flex items-center gap-2">
+                <Landmark className="w-5 h-5 text-emerald-500" />
+                Your Stock Holdings
+              </h3>
+            </div>
+
+            {assets.length === 0 ? (
+              <EmptyState />
+            ) : (
+              <div className="p-4 space-y-3">
+                {assets.map((item) => (
+                  <div
+                    key={item._id}
+                    className="flex justify-between bg-[#0A1220] p-4 rounded-lg"
+                  >
+                    <div>
+                      <div className="font-semibold text-white">
+                        {item.assetName}
+                      </div>
+                      <div className="text-sm text-slate-400">
+                        Invested: ${item.rewardValue.toFixed(2)}
+                      </div>
+                    </div>
+
+                    <div className="text-right">
+                      <div className="font-semibold text-white">
+                        ${item.currentValue.toFixed(2)}
+                      </div>
+                      <div
+                        className={`text-sm ${
+                          item.profitLoss >= 0
+                            ? "text-green-400"
+                            : "text-red-400"
+                        }`}
+                      >
+                        {item.profitLoss >= 0 ? "+" : "-"}$
+                        {Math.abs(item.profitLoss).toFixed(2)}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      </Section>
+    </AnimateSection>
   );
 };
 
-export default TransactionsPage;
+/* ================= SMALL COMPONENTS ================= */
+
+const StatCard = ({ icon, label, value, sub, valueClass = "text-white" }: any) => (
+  <div className="rounded-xl p-4 bg-black border border-slate-800 shadow-lg">
+    <p className="text-sm text-white/80 flex items-center gap-2">
+      {icon} {label}
+    </p>
+    <h3 className={`text-2xl font-semibold ${valueClass}`}>{value}</h3>
+    {sub && <p className="text-sm text-white/60">{sub}</p>}
+  </div>
+);
+
+const EmptyState = () => (
+  <div className="flex flex-col items-center justify-center text-center px-4 py-12">
+    <Package size={56} className="text-emerald-500 mb-3" />
+    <h3 className="text-2xl font-bold text-white mb-2">No Holdings Yet</h3>
+    <p className="text-white/70">
+      Start shopping with ARRC merchant partners to earn stock rewards.
+    </p>
+  </div>
+);
+
+export default MarketsPage;
