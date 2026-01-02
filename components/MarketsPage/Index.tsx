@@ -76,7 +76,6 @@ const TransactionsPage = () => {
           </div>
         </Section>
       </AnimateSection>
-
     </>
   );
 };
