@@ -32,29 +32,3 @@ export default function LogoLoader() {
 }
 
 
-
-
-// "use client";
-
-// import { useSelector } from "react-redux";
-// import type { RootState } from "@/redux/store";
-// import Logo from "@/components/Logo";
-
-// export default function LogoLoader() {
-//   const loading = useSelector((state: RootState) => state.loader.loading);
-
-//   if (!loading) return null;
-
-//   return (
-//     <div className="fixed inset-0 z-[999999] flex items-center justify-center bg-black/95">
-//       <div className="flex flex-col items-center gap-3">
-//         {/* SAME LOGO */}
-//         <Logo size="sm" />
-
-//         <p className="text-cyan-200 text-sm tracking-wide animate-pulse">
-//           Loading...
-//         </p>
-//       </div>
-//     </div>
-//   );
-// }
