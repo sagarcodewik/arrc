@@ -1,13 +1,24 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import AnimateSection from "../AnimateSection";
 import Section from "../Section";
 import { Clock, DollarSign, Sparkles, TrendingUp } from "lucide-react";
 import Input from "../ui/Input";
 import { Select } from "../ui/Select";
 
+/* ================= HELPERS ================= */
+const clamp = (v: number, min: number, max: number) =>
+  Math.min(Math.max(v, min), max);
+
+const money = (v: number) =>
+  new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+  }).format(v);
+
+/* ================= COMPONENT ================= */
 const LevelUpPage = () => {
-  /* ------------------ QUOTES ------------------ */
+  /* ---------- Quotes ---------- */
   const quotes = [
     "Every dollar invested is a seed for future harvest.",
     "The power of compound interest is the eighth wonder.",
@@ -16,115 +27,101 @@ const LevelUpPage = () => {
   const [index, setIndex] = useState(0);
 
   useEffect(() => {
-    const i = setInterval(
+    const interval = setInterval(
       () => setIndex((p) => (p + 1) % quotes.length),
       3000
     );
-    return () => clearInterval(i);
+    return () => clearInterval(interval);
   }, []);
 
-  /* ------------------ INPUT STATE ------------------ */
-  const [principal, setPrincipal] = useState(0);
-  const [contribution, setContribution] = useState(0);
-  const [rate, setRate] = useState(0);
-  const [years, setYears] = useState(0);
-  const [frequency, setFrequency] = useState(12); // monthly
-  const [compound, setCompound] = useState(12);
+  /* ---------- State ---------- */
+  const [principal, setPrincipal] = useState("");
+  const [contribution, setContribution] = useState("");
+  const [frequency, setFrequency] = useState("monthly");
+  const [rate, setRate] = useState("");
+  const [years, setYears] = useState("");
 
-  /* ------------------ OUTPUT STATE ------------------ */
   const [futureValue, setFutureValue] = useState(0);
   const [totalInvested, setTotalInvested] = useState(0);
   const [interestPV, setInterestPV] = useState(0);
   const [interestPMT, setInterestPMT] = useState(0);
 
-  /* ------------------ CALCULATION ------------------ */
+  /* ---------- Calculation (WORKING LOGIC) ---------- */
   useEffect(() => {
-    const r = rate / 100;
-    const t = years;
+    const P = clamp(Number(principal) || 0, 0, 1_000_000_000);
+    const PMT = clamp(Number(contribution) || 0, 0, 1_000_000);
+    const r = clamp(Number(rate) || 0, 0, 100) / 100;
+    const t = clamp(Number(years) || 0, 0, 100);
 
-    const FV_PV =
-      principal * Math.pow(1 + r / compound, compound * t);
+    const freqMap: Record<string, number> = {
+      daily: 365,
+      weekly: 52,
+      biweekly: 26,
+      monthly: 12,
+    };
 
-    const totalPeriods = frequency * t;
-    const rPmt = r / frequency;
+    const m = freqMap[frequency];
+    const r_pmt = r / m;
+    const totalPeriods = m * t;
+
+    const FV_PV = P * Math.pow(1 + r / 12, 12 * t);
 
     const FV_PMT =
       r > 0
-        ? contribution *
-          ((Math.pow(1 + rPmt, totalPeriods) - 1) / rPmt)
-        : contribution * totalPeriods;
+        ? PMT * ((Math.pow(1 + r_pmt, totalPeriods) - 1) / r_pmt)
+        : PMT * totalPeriods;
 
     const total = FV_PV + FV_PMT;
-    const invested = principal + contribution * totalPeriods;
+    const invested = P + PMT * totalPeriods;
 
-    if (!isFinite(total)) return;
+    if (!Number.isFinite(total)) return;
 
     setFutureValue(total);
     setTotalInvested(invested);
-    setInterestPV(FV_PV - principal);
-    setInterestPMT(FV_PMT - contribution * totalPeriods);
-  }, [principal, contribution, rate, years, frequency, compound]);
+    setInterestPV(FV_PV - P);
+    setInterestPMT(FV_PMT - PMT * totalPeriods);
+  }, [principal, contribution, frequency, rate, years]);
 
-  const money = (v: number) =>
-    new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-    }).format(v);
-
-  /* ------------------ UI ------------------ */
+  /* ================= UI (UNCHANGED) ================= */
   return (
     <>
-      {/* ================= HERO ================= */}
+      {/* INPUT SECTION */}
       <AnimateSection>
         <Section customClass="relative mb-6">
-          <div className="flex flex-col items-center justify-center gap-10">
-            <div className="relative w-full max-w-[800px] px-4 flex flex-col items-center">
-              <div className="relative top-12 flex min-h-[220px] w-full items-center justify-center rounded-3xl bg-gradient-to-br from-white/95 to-sky-100/95 p-8 shadow-2xl">
-                <h2 key={index} className="text-center text-xl sm:text-2xl md:text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-br from-sky-900 via-sky-500 to-sky-900">{quotes[index]}</h2>
-              </div>
-              <div className="text-center space-y-2 px-4 mt-20">
-                <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold">Time Value of Money</h1>
-                <p className="text-lg font-medium text-slate-600">The Power of Time, Money, & Habits</p>
-                <p className="text-sm text-slate-500">Combined Investment & Savings Growth Calculator</p>
-              </div>
-            </div>
-          </div>
-        </Section>
-      </AnimateSection>
-
-      {/* ================= CALCULATOR ================= */}
-      <AnimateSection>
-        <Section customClass="relative mb-6">
-          <div className="grid lg:grid-cols-2 gap-6 p-6 bg-white rounded-2xl shadow-xl">
-            {/* -------- INPUTS -------- */}
+          <div className="grid sm:grid-cols-2 gap-6 p-6 bg-white/95 border border-slate-200 shadow-xl rounded-2xl">
             <div className="space-y-4">
               <Input
                 label="Initial Investment (Lump Sum)"
                 type="number"
                 value={principal}
-                onChange={(e) => setPrincipal(+e.target.value)}
-                leftIcon={<DollarSign size={18} />}
+                onChange={(e) => setPrincipal(e.target.value)}
+                leftIcon={<DollarSign />}
               />
 
-              <div className="bg-slate-50 p-4 rounded-xl space-y-4">
+              <div className="bg-slate-50 p-4 rounded-xl border">
+                <label className="flex items-center gap-2 text-sm mb-1">
+                  <Sparkles className="w-4 h-4" />
+                  Regular Contribution
+                </label>
                 <Input
-                  label="Regular Contribution"
                   type="number"
                   value={contribution}
-                  onChange={(e) => setContribution(+e.target.value)}
-                  leftIcon={<Sparkles size={18} />}
+                  onChange={(e) => setContribution(e.target.value)}
+                  leftIcon={<DollarSign />}
                 />
 
+                <label className="flex items-center gap-2 text-sm mt-3">
+                  <Clock className="w-4 h-4" />
+                  Contribution Frequency
+                </label>
                 <Select
-                  label="Contribution Frequency"
                   value={frequency}
-                  onChange={(e) =>
-                    setFrequency(Number(e.target.value))
-                  }
+                  onChange={(e) => setFrequency(e.target.value)}
                   options={[
-                    { value: 12, label: "Monthly" },
-                    { value: 52, label: "Weekly" },
-                    { value: 365, label: "Daily" },
+                    { value: "daily", label: "Daily" },
+                    { value: "weekly", label: "Weekly" },
+                    { value: "biweekly", label: "Bi-Weekly" },
+                    { value: "monthly", label: "Monthly" },
                   ]}
                 />
               </div>
@@ -133,51 +130,37 @@ const LevelUpPage = () => {
                 label="Annual Interest Rate (%)"
                 type="number"
                 value={rate}
-                onChange={(e) => setRate(+e.target.value)}
+                onChange={(e) => setRate(e.target.value)}
               />
 
               <Input
                 label="Investment Horizon (Years)"
                 type="number"
                 value={years}
-                onChange={(e) => setYears(+e.target.value)}
-              />
-
-              <Select
-                label="Compounding Frequency"
-                value={compound}
-                onChange={(e) =>
-                  setCompound(Number(e.target.value))
-                }
-                options={[
-                  { value: 1, label: "Yearly" },
-                  { value: 4, label: "Quarterly" },
-                  { value: 12, label: "Monthly" },
-                  { value: 365, label: "Daily" },
-                ]}
+                onChange={(e) => setYears(e.target.value)}
               />
             </div>
 
-            {/* -------- RESULTS -------- */}
-            <div className="space-y-4">
-              <div className="rounded-xl bg-gradient-to-br from-sky-500 to-cyan-500 p-6 text-white shadow-xl">
-                <p className="text-sm">Total Future Value</p>
-                <p className="text-3xl font-bold">
-                  {money(futureValue)}
-                </p>
+            {/* RESULTS */}
+            <div className="bg-slate-50 rounded-2xl border p-4 space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="bg-white p-4 rounded-xl shadow">
+                  <h3>Total Future Value</h3>
+                  <p>{money(futureValue)}</p>
+                </div>
+                <div className="bg-white p-4 rounded-xl shadow">
+                  <h3>Total Invested</h3>
+                  <p>{money(totalInvested)}</p>
+                </div>
               </div>
 
-              <div className="bg-white rounded-xl border p-4 space-y-2">
+              <div className="bg-white p-4 rounded-xl shadow text-sm">
                 <div className="flex justify-between">
-                  <span>Invested</span>
-                  <span>{money(totalInvested)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Lump Sum Interest</span>
+                  <span>Interest from Lump Sum</span>
                   <span>{money(interestPV)}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span>Contribution Interest</span>
+                  <span>Interest from Contributions</span>
                   <span>{money(interestPMT)}</span>
                 </div>
               </div>
@@ -192,8 +175,10 @@ const LevelUpPage = () => {
 export default LevelUpPage;
 
 
+
+
 // "use client";
-// import React, { useState, useEffect } from "react";
+// import { useState, useEffect } from "react";
 // import AnimateSection from "../AnimateSection";
 // import Section from "../Section";
 // import { Button } from "../ui/Button";
@@ -203,14 +188,8 @@ export default LevelUpPage;
 
 
 // const LevelUpPage = () => {
-//   const quotes = [
-//     "Every dollar invested is a seed for future harvest.",
-//     "The power of compound interest is the eighth wonder.",
-//     "Time is the most powerful multiplier of wealth.",
-//   ];
-
+//   const quotes = ["Every dollar invested is a seed for future harvest.", "The power of compound interest is the eighth wonder.", "Time is the most powerful multiplier of wealth.",];
 //   const [index, setIndex] = useState(0);
-
 //   useEffect(() => {
 //     const interval = setInterval(() => {
 //       setIndex((prev) => (prev + 1) % quotes.length);
