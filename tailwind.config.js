@@ -1,19 +1,28 @@
-/** @type {import('tailwindcss').Config} */
-export default {
-  content: [
-    "./app/**/*.{js,ts,jsx,tsx}",
-    "./pages/**/*.{js,ts,jsx,tsx}",
-    "./components/**/*.{js,ts,jsx,tsx}",
-  ],
+module.exports = {
   theme: {
     extend: {
-      colors: {
-        background: "#0a0a0a",
-        foreground: "#ededed",
+      keyframes: {
+        logoZoomIn: {
+          "0%": {
+            transform: "scale(0.2)",
+            opacity: "0",
+          },
+          "60%": {
+            transform: "scale(1.15)",
+            opacity: "1",
+          },
+          "100%": {
+            transform: "scale(1)",
+            opacity: "1",
+          },
+        },
       },
-      fontFamily: {
-        primary: ["Poppins", "sans-serif"],
+      animation: {
+        logoZoomIn: "logoZoomIn 1.1s cubic-bezier(0.22, 1, 0.36, 1) forwards",
       },
     },
   },
 };
+
+
+  

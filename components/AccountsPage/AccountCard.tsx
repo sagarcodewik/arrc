@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
-export interface Account { id: string; provider: string; title: string; emoji?: string; balance: string; accountType: string; lastFour: string; lastSync: string; tags?: string[]; connected?: boolean;}
-interface Props { account: Account; onRemove?: (id: string) => void;}
+export interface Account { id: string; itemId: string; provider: string; title: string; emoji?: string; balance: string; accountType: string; lastFour: string; lastSync: string; tags?: string[]; connected?: boolean;}
+interface Props { account: Account; onRemove?: (itemId: string) => void;}
 export default function AccountCard({ account, onRemove }: Props) {
   return (
     <div className="h-full">
@@ -54,7 +54,7 @@ export default function AccountCard({ account, onRemove }: Props) {
               <line x1="10" x2="10" y1="11" y2="17"></line>
               <line x1="14" x2="14" y1="11" y2="17"></line>
             </svg>
-            Remove Demo
+            Remove Account
           </button>
         </div>
       </div>

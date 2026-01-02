@@ -1,7 +1,8 @@
-import TransactionsPage from "@/components/TransactionsPage/Index";
 
-const Index = () => {
-    return <TransactionsPage />
+import TransactionsPage from "@/components/TransactionsPage/transactions";
+// import TransactionsPage from "@/components/TransactionsPage/Index";
+const Page = () => {
+  return <TransactionsPage />;
 };
 
-export default Index;
+export default Page;

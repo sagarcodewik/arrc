@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "react-datepicker/dist/react-datepicker.css";
 
 /* ================================ THEME TOKENS ================================ */
 @theme {
@@ -17,8 +18,7 @@
 /* ================================ BASE ================================ */
 :root {font-family: "Poppins", "Helvetica Neue", Helvetica, Arial, sans-serif;}
 
-body {@apply bg-background text-foreground;font-family: var(--font-poppins), sans-serif;}
-
+body {@apply bg-background text-foreground;}
 h1, h2, h3, h4, h5, h6, ul, li, p, a, button {font-family: inherit;}
 a {text-decoration: none;}
 button {cursor: pointer;}
@@ -29,9 +29,6 @@ hr {margin: 0; border: 0; height: 1px; background-color: currentColor; opacity: 
   0% {background-position: 0 0;}
   50% {background-position: 100% 0;}
   100% {background-position: 0 0;}
-}
-.secondary-font {
-  font-family: var(--font-jakarta), sans-serif;
 }
 
 /* ================================ COMPONENT HELPERS ================================ */

@@ -1,7 +1,7 @@
-import PortfolioPage from "@/components/PortfolioPage/Index";
 
-const Index = () => {
-    return <PortfolioPage />
+import PortfolioPage from "@/components/portfolio/portfolio";
+const Page = () => {
+  return <PortfolioPage />;
 };
 
-export default Index;
+export default Page;
