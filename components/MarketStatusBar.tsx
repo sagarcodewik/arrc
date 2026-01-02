@@ -1,6 +1,6 @@
 "use client";
 
-import { useMarketStatus } from "@/components/Markets/useMarketStatus";
+import { useMarketStatus } from "../components/MarketsPage/useMarketStatus";
 
 export default function MarketStatusBar() {
   const { time, isOpen } = useMarketStatus();
