@@ -45,12 +45,12 @@ const mainNavLinks: NavLink[] = [
   },
   {
     label: "Member Card",
-    href: "/memberCard",
+    href: "/membercard",
     icon: <Crown className="w-5 h-5 text-amber-600" />,
   },
   {
     label: "TVM Calculator",
-    href: "/letsLevelUp",
+    href: "/level",
     icon: <Calculator className="w-5 h-5 text-emerald-600" />,
   },
 ];
