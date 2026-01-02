@@ -1,7 +1,7 @@
+import MarketsPage from "@/components/MarketsPage/Index";
 
-import MarketsPage from "@/components/Markets/markets";
-const Page = () => {
-  return <MarketsPage />;
+const Index = () => {
+    return <MarketsPage />
 };
 
-export default Page;
+export default Index;
